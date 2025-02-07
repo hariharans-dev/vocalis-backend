@@ -3,8 +3,8 @@ const fs = require("fs");
 
 const client = redis.createClient({
     socket: {
-        host: "127.0.0.1",  
-        port: 4000, 
+        host: "localhost",  
+        port: 6379
     },
 });
 
@@ -28,7 +28,7 @@ async function publishMessage(id, audioFilePath) {
 }
 
 // Example usage
-const id = 1;
+const id = "c4c99d4d-e47c-11ef-b166-14cb19882f9d";
 const audioFilePath = "Recording.mp3"; 
 
 publishMessage(id, audioFilePath)
