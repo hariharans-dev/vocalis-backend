@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { v4: uuidv4 } = require("uuid");
 module.exports = (sequelize, DataTypes) => {
   class event extends Model {
     /**
@@ -13,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "id",
       });
       event.belongsTo(models.event_detail, {
-        foreignKey: "event_detail",
+        foreignKey: "event_detail_id",
         targetKey: "id",
       });
     }
@@ -22,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       id: {
         type: DataTypes.UUID,
-        defaultValue: UUIDV4,
+        defaultValue: uuidv4(),
         primaryKey: true,
       },
       root_id: {
