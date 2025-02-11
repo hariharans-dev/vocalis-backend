@@ -1,0 +1,38 @@
+// import Audience from "./Audience.js";
+// import Audience_survey from "./Audience_survey.js";
+// import Reporter_survey from "./Reporter_survey.js";
+// import Event from "../Event/Event.js";
+// import User from "../User/User.js";
+
+// Audience.hasOne(Audience_survey, {
+//   foreignKey: "audience_id",
+//   as: "audience_survey",
+//   target: "id",
+//   onDelete: "CASCADE",
+// });
+
+// Audience.hasOne(Reporter_survey, {
+//   foreignKey: "audience_id",
+//   as: "reporter_survey",
+//   target: "id",
+//   onDelete: "CASCADE",
+// });
+
+// Event.hasMany(Audience_survey, {
+//   foreignKey: "event_id",
+//   as: "event",
+//   target: "id",
+//   onDelete: "CASCADE",
+// });
+
+// Event.hasMany(Reporter_survey, {
+//   foreignKey: "event_id",
+//   as: "event",
+//   target: "id",
+// });
+
+// User.hasMany(Reporter_survey, {
+//   foreignKey: "user_id",
+//   as: "user",
+//   target: "id",
+// });

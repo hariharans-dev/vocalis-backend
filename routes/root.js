@@ -1,17 +1,22 @@
-require("dotenv").config({ path: ".env.development" });
-const Sequelize = require("sequelize");
+import express from "express";
 
-dotenv.config();
+import RootController from "../controller/root.js";
+import authMiddleware from "../middleware/authentication.js";
+import forgetEmailMiddleware from "../middleware/onetimeuse.js";
 
-const sequelize = new Sequelize({
-  dialect: process.env.DB,
-  host: process.env.DB_HOST,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  define: {
-    freezeTableName: true,
-  },
-});
+const rootRouter = express.Router();
 
-module.exports = sequelize;
+const rootcontroller = new RootController();
+
+rootRouter.post("/", rootcontroller.register);
+rootRouter.put("/", authMiddleware, rootcontroller.update);
+rootRouter.delete("/", authMiddleware, rootcontroller.delete);
+rootRouter.get("/", authMiddleware, rootcontroller.get);
+rootRouter.post("/forgetpassword", rootcontroller.forgetpassword);
+rootRouter.put(
+  "/forgetpassword",
+  forgetEmailMiddleware,
+  rootcontroller.forgetpasswordvalidation
+);
+
+export default rootRouter;

@@ -1,6 +1,7 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+import { Sequelize } from "sequelize";
 
-const { Sequelize } = require("sequelize");
+dotenv.config({ path: ".env.development" });
 
 const sequelize = new Sequelize({
   dialect: process.env.DB,
@@ -13,4 +14,4 @@ const sequelize = new Sequelize({
   },
 });
 
-module.exports = sequelize;
+export default sequelize;
