@@ -2,7 +2,7 @@ import express from "express";
 
 import RootController from "../controller/root.js";
 import authMiddleware from "../middleware/authentication.js";
-import forgetEmailMiddleware from "../middleware/onetimeuse.js";
+import onetimeuseMiddleware from "../middleware/onetimeuse.js";
 
 const rootRouter = express.Router();
 
@@ -15,7 +15,7 @@ rootRouter.get("/", authMiddleware, rootcontroller.get);
 rootRouter.post("/forgetpassword", rootcontroller.forgetpassword);
 rootRouter.put(
   "/forgetpassword",
-  forgetEmailMiddleware,
+  onetimeuseMiddleware,
   rootcontroller.forgetpasswordvalidation
 );
 

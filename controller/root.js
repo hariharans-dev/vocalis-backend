@@ -41,7 +41,7 @@ export default class RootController {
     const reqBody = req.body;
 
     const requiredFeild = ["email", "password"];
-    const validation = requestValidation(requiredFeild, req.body);
+    const validation = requestValidation(requiredFeild, reqBody);
 
     if (!validation) {
       return res
@@ -51,10 +51,9 @@ export default class RootController {
 
     const email = reqBody.email;
     const password = await bcrypt.hash(reqBody.password, 10);
-    var response;
 
     try {
-      response = await Root.create(
+      var response = await Root.create(
         { email: email, root_credential: { password: password } },
         { include: { model: Root_credential, as: "root_credential" } }
       );
@@ -66,6 +65,7 @@ export default class RootController {
 
       res.status(200).json(createApiResponse({ token: token }, 200));
     } catch (error) {
+      console.log(error);
       if (error.name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)

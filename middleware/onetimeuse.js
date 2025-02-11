@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import createApiResponse from "../utility/httpResponse.js";
 import { deleteKey, getKey } from "../db/redis_connection.js";
 
-const forgetEmailMiddleware = async (req, res, next) => {
+const onetimeuseMiddleware = async (req, res, next) => {
   const header = req.header("Authorization")?.split(" ");
 
   if (!header) {
@@ -34,8 +34,10 @@ const forgetEmailMiddleware = async (req, res, next) => {
 
     next();
   } catch (error) {
-    return res.status(403).json(createApiResponse("invalid key"));
+    return res
+      .status(403)
+      .json(createApiResponse("invalid authentication", 403));
   }
 };
 
-export default forgetEmailMiddleware;
+export default onetimeuseMiddleware;

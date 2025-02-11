@@ -123,7 +123,7 @@ export default class UserController {
 
       return res
         .status(201)
-        .json(createApiResponse("root deleted successful", 201));
+        .json(createApiResponse("user deleted successful", 201));
     } catch (error) {
       return res
         .status(500)
