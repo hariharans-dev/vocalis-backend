@@ -16,9 +16,9 @@ export default class RootController {
       return res.status(403).json(createApiResponse("restricted content", 403));
     }
     const token = req.middleware.token;
-    var resBody = {};
 
     try {
+      var resBody = {};
       var data = await Root.findOne({
         where: { id: id },
         attributes: { exclude: ["id", "createdAt", "updatedAt"] },
@@ -86,7 +86,7 @@ export default class RootController {
     const token = req.middleware.token;
 
     const reqBody = req.body;
-    const requiredFeild = ["name", "phone", "email", "password"];
+    const requiredFeild = ["name", "phone", "email"];
     const validation = requestParameter(requiredFeild, reqBody);
     if (!validation) {
       return res
