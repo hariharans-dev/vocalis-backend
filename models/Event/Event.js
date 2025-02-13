@@ -8,16 +8,15 @@ Event.init(
   {
     id: {
       type: DataTypes.UUID,
-      defaultValue: uuidv4(),
+      defaultValue: uuidv4,
       primaryKey: true,
     },
     root_id: {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    event_detail_id: {
-      type: DataTypes.UUID,
-      unique: true,
+    name: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
   },
@@ -26,6 +25,12 @@ Event.init(
     modelName: "Event",
     tableName: "event",
     timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ["root_id", "name"],
+      },
+    ],
   }
 );
 

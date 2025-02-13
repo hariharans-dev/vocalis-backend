@@ -1,19 +1,11 @@
-// import Event from "./Event.js";
-// import Event_detail from "./Event_detail.js";
-// import Root from "../Root/Root.js";
+import Event from "./Event.js";
+import Event_detail from "./Event_detail.js";
 
-// Event.belongsTo(Event_detail, {
-//   foreignKey: "id",
-//   as: "event_detail",
-//   target: "event_detail_id",
-//   onDelete: "CASCADE",
-// });
-
-// Event.belongsTo(Root, {
-//   foreignKey: "id",
-//   as: "root",
-//   target: "root_id",
-//   onDelete: "CASCADE",
-// });
+Event.hasOne(Event_detail, {
+  foreignKey: "event_id",
+  as: "event_detail",
+  onDelete: "CASCADE",
+  hooks: true,
+});
 
 // export default { Event, Event_detail };

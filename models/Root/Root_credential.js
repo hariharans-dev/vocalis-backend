@@ -8,7 +8,7 @@ Root_credential.init(
   {
     id: {
       type: DataTypes.UUID,
-      defaultValue: uuidv4(),
+      defaultValue: uuidv4,
       primaryKey: true,
     },
     password: {

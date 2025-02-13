@@ -6,19 +6,26 @@ import {
 } from "../utility/requestValidation.js";
 import { createJWT } from "../utility/createJWT.js";
 import { sendEmail } from "../utility/emailsender.js";
-import { Root, Root_credential } from "../models/Root/RootAssociation.js";
+import "../models/Root/RootAssociation.js";
+import Root from "../models/Root/Root.js";
+import Root_credential from "../models/Root/Root_credential.js";
 
 export default class RootController {
   async get(req, res) {
     const id = req.middleware.id;
     const role = req.middleware.role;
     if (role != "root") {
-      return res.status(403).json(createApiResponse("restricted content", 403));
+      return res
+        .status(403)
+        .json(createApiResponse({ response: "restricted content" }, 403));
     }
     const token = req.middleware.token;
+    var resBody = {};
+    if (token) {
+      resBody = { ...resBody, token: token };
+    }
 
     try {
-      var resBody = {};
       var data = await Root.findOne({
         where: { id: id },
         attributes: { exclude: ["id", "createdAt", "updatedAt"] },
@@ -26,10 +33,9 @@ export default class RootController {
       data = data.toJSON();
       resBody = { ...resBody, ...data };
 
-      if (token) {
-        resBody.token = token;
-      }
-      return res.status(201).json(createApiResponse(resBody, 201));
+      return res
+        .status(201)
+        .json(createApiResponse({ root_detail: resBody }, 201));
     } catch (error) {
       console.log(error);
       return res
@@ -46,7 +52,7 @@ export default class RootController {
     if (!validation) {
       return res
         .status(400)
-        .json(createApiResponse("required feilds missing", 400));
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
     }
 
     const email = reqBody.email;
@@ -63,17 +69,24 @@ export default class RootController {
 
       const token = await createJWT(id, role);
 
-      res.status(200).json(createApiResponse({ token: token }, 200));
+      res
+        .status(200)
+        .json(
+          createApiResponse(
+            { token: token, response: "root user registered" },
+            200
+          )
+        );
     } catch (error) {
       console.log(error);
       if (error.name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
-          .json(createApiResponse("email already exists", 409));
+          .json(createApiResponse({ response: "email exists" }, 409));
       } else {
         return res
           .status(500)
-          .json(createApiResponse("internal server error", 500));
+          .json(createApiResponse({ response: "internal server error" }, 500));
       }
     }
   }
@@ -81,7 +94,9 @@ export default class RootController {
     const id = req.middleware.id;
     const role = req.middleware.role;
     if (role != "root") {
-      return res.status(403).json(createApiResponse("restricted content", 403));
+      return res
+        .status(403)
+        .json(createApiResponse({ response: "restricted content" }, 403));
     }
     const token = req.middleware.token;
 
@@ -91,24 +106,35 @@ export default class RootController {
     if (!validation) {
       return res
         .status(400)
-        .json(createApiResponse("undefined feilds found", 400));
+        .json(createApiResponse({ response: "undefined feilds found" }, 400));
     }
 
     try {
       await Root.update(reqBody, { where: { id: id } });
       if (token) {
-        return res.status(201).json(createApiResponse({ token: token }, 201));
+        return res
+          .status(201)
+          .json(
+            createApiResponse(
+              { token: token, response: "update successful" },
+              201
+            )
+          );
       }
-      return res.status(201).json(createApiResponse("update successfull", 201));
+      return res
+        .status(201)
+        .json(createApiResponse({ response: "update successfull" }, 201));
     } catch (error) {
       if (error.name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
-          .json(createApiResponse("phone number already exists", 409));
+          .json(
+            createApiResponse({ response: "phone number already exists" }, 409)
+          );
       } else {
         return res
           .status(500)
-          .json(createApiResponse("internal server error", 500));
+          .json(createApiResponse({ response: "internal server error" }, 500));
       }
     }
   }
@@ -116,7 +142,9 @@ export default class RootController {
     const id = req.middleware.id;
     const role = req.middleware.role;
     if (role != "root") {
-      return res.status(403).json(createApiResponse("restricted content", 403));
+      return res
+        .status(403)
+        .json(createApiResponse({ response: "restricted content" }, 403));
     }
 
     try {
@@ -126,12 +154,11 @@ export default class RootController {
 
       return res
         .status(201)
-        .json(createApiResponse("root deleted successful", 201));
+        .json(createApiResponse({ response: "root deleted successful" }, 201));
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
-        .json(createApiResponse("internal server error", 500));
+        .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
   async forgetpassword(req, res) {
@@ -140,7 +167,7 @@ export default class RootController {
     if (!email) {
       return res
         .status(400)
-        .json(createApiResponse("required feilds missing", 400));
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
     }
     try {
       var data = await Root.findOne({
@@ -152,7 +179,7 @@ export default class RootController {
       if (!data) {
         return res
           .status(404)
-          .json(createApiResponse("email not registered", 404));
+          .json(createApiResponse({ response: "email not registered" }, 404));
       }
       data = data.toJSON();
       const token = await createJWT(data.id, "forgetpassword");
@@ -164,7 +191,9 @@ export default class RootController {
         link
       );
 
-      return res.json(createApiResponse("forgetpassword email sent", 201));
+      return res.json(
+        createApiResponse({ response: "forgetpassword email sent" }, 201)
+      );
     } catch (error) {
       return res
         .status(500)
@@ -182,15 +211,13 @@ export default class RootController {
         { where: { root_id: id } }
       );
 
-      return res.status(201).json(createApiResponse("password changed", 201));
+      return res
+        .status(201)
+        .json(createApiResponse({ response: "password changed" }, 201));
     } catch (error) {
       return res
         .status(500)
-        .json(createApiResponse("internal server error", 500));
+        .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
 }
-
-// const token = Root.generateAuthToken(data);
-// const payload = { token: token, data: "register success" };
-// const passwordMatch = bcrypt.compareSync(password, user.password);

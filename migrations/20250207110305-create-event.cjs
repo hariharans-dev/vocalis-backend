@@ -12,10 +12,9 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
       },
-      event_detail_id: {
-        type: Sequelize.UUID,
+      name: {
+        type: Sequelize.STRING,
         allowNull: false,
-        unique: true,
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -28,8 +27,14 @@ module.exports = {
         allowNull: false,
       },
     });
+    await queryInterface.addConstraint("event", {
+      fields: ["root_id", "name"],
+      type: "unique",
+      name: "unique_root_id_name",
+    });
   },
   async down(queryInterface, Sequelize) {
+    await queryInterface.removeConstraint("event", "unique_root_id_name");
     await queryInterface.dropTable("event");
   },
 };

@@ -2,38 +2,34 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../../db/db_connection.js";
 import { v4 as uuidv4 } from "uuid";
 
-class Event_details extends Model {}
+class Event_detail extends Model {}
 
-Event_details.init(
+Event_detail.init(
   {
     id: {
       type: DataTypes.UUID,
-      defaultValue: uuidv4(),
+      defaultValue: uuidv4,
       primaryKey: true,
     },
-    name: {
-      type: DataTypes.STRING,
+    event_id: {
+      type: DataTypes.UUID,
+      unique: true,
       allowNull: false,
     },
     location: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
     phone: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: false,
     },
     date: {
       type: DataTypes.DATE,
-      allowNull: false,
     },
   },
   {
@@ -44,4 +40,4 @@ Event_details.init(
   }
 );
 
-export default Event_details;
+export default Event_detail;

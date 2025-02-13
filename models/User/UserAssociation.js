@@ -6,5 +6,3 @@ User.hasOne(User_credential, {
   as: "user_credential",
   onDelete: "CASCADE",
 });
-
-export { User, User_credential };

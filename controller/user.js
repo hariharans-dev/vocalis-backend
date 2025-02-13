@@ -4,7 +4,9 @@ import {
   requestValidation,
   requestParameter,
 } from "../utility/requestValidation.js";
-import { User, User_credential } from "../models/User/UserAssociation.js";
+import "../models/User/UserAssociation.js";
+import User from "../models/User/User.js";
+import User_credential from "../models/User/User_credential.js";
 import { createJWT } from "../utility/createJWT.js";
 
 export default class UserController {
@@ -12,26 +14,28 @@ export default class UserController {
     const id = req.middleware.id;
     const role = req.middleware.role;
     if (role != "user") {
-      return res.status(403).json(createApiResponse("restricted content", 403));
+      return res
+        .status(403)
+        .json(createApiResponse({ response: "restricted content" }, 403));
     }
     const token = req.middleware.token;
+    var resBody = {};
+    if (token) {
+      resBody = { ...resBody, token: token };
+    }
 
     try {
-      var resBody = {};
       var data = await User.findOne({
         where: { id: id },
         attributes: { exclude: ["id", "createdAt", "updatedAt"] },
       });
       data = data.toJSON();
       resBody = { ...resBody, ...data };
-      if (token) {
-        resBody.token = token;
-      }
       return res.status(201).json(createApiResponse(resBody, 201));
     } catch (error) {
       return res
         .status(500)
-        .json(createApiResponse("internal server error", 500));
+        .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
   async register(req, res) {
@@ -42,7 +46,7 @@ export default class UserController {
     if (!validation) {
       return res
         .status(400)
-        .json(createApiResponse("required feilds missing", 400));
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
     }
 
     const email = reqBody.email;
@@ -68,9 +72,11 @@ export default class UserController {
       if (error.name == "SequelizeUniqueConstraintError") {
         return res
           .status(409)
-          .json(createApiResponse("email already exists", 409));
+          .json(createApiResponse({ response: "email already exists" }, 409));
       } else {
-        return res.status(500).json(createApiResponse("internal server error"));
+        return res
+          .status(500)
+          .json(createApiResponse({ response: "internal server error" }));
       }
     }
   }
@@ -79,7 +85,9 @@ export default class UserController {
     const id = req.middleware.id;
     const role = req.middleware.role;
     if (role != "user") {
-      return res.status(403).json(createApiResponse("restricted content", 403));
+      return res
+        .status(403)
+        .json(createApiResponse({ response: "restricted content" }, 403));
     }
     const token = req.middleware.token;
 
@@ -89,7 +97,7 @@ export default class UserController {
     if (!validation) {
       return res
         .status(400)
-        .json(createApiResponse("undefined feilds found", 400));
+        .json(createApiResponse({ response: "undefined feilds found" }, 400));
     }
 
     try {
@@ -97,16 +105,20 @@ export default class UserController {
       if (token) {
         return res.status(201).json(createApiResponse({ token: token }, 201));
       }
-      return res.status(201).json(createApiResponse("update successfull", 201));
+      return res
+        .status(201)
+        .json(createApiResponse({ response: "update successfull" }, 201));
     } catch (error) {
       if (error.name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
-          .json(createApiResponse("phone number already exists", 409));
+          .json(
+            createApiResponse({ response: "phone number already exists" }, 409)
+          );
       } else {
         return res
           .status(500)
-          .json(createApiResponse("internal server error", 500));
+          .json(createApiResponse({ response: "internal server error" }, 500));
       }
     }
   }
@@ -114,20 +126,22 @@ export default class UserController {
     const id = req.middleware.id;
     const role = req.middleware.role;
     if (role != "user") {
-      return res.status(403).json(createApiResponse("restricted content", 403));
+      return res
+        .status(403)
+        .json(createApiResponse({ response: "restricted content" }, 403));
     }
-    const token = req.middleware.token;
+    // const token = req.middleware.token;
 
     try {
       await User.destroy({ where: { id: id } });
 
       return res
         .status(201)
-        .json(createApiResponse("user deleted successful", 201));
+        .json(createApiResponse({ response: "user deleted successful" }, 201));
     } catch (error) {
       return res
         .status(500)
-        .json(createApiResponse("internal server error", 500));
+        .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
 }

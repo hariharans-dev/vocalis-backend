@@ -8,13 +8,12 @@ Subscription.init(
   {
     id: {
       type: DataTypes.UUID,
-      defaultValue: uuidv4(),
+      defaultValue: uuidv4,
       primaryKey: true,
     },
-    Invoked_requests: {
+    invoked_request: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
-      allowNull: true,
     },
     subscription_plan_id: {
       type: DataTypes.UUID,

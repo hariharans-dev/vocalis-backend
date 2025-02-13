@@ -8,7 +8,7 @@ Role.init(
   {
     id: {
       type: DataTypes.UUID,
-      defaultValue: uuidv4(),
+      defaultValue: uuidv4,
       primaryKey: true,
     },
     role_list_id: {

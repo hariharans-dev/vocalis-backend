@@ -23,6 +23,7 @@ const onetimeuseMiddleware = async (req, res, next) => {
     const redisId = data.id;
 
     var redisData = await getKey(redisId);
+    console.log(redisData);
     if (!redisData) {
       throw error;
     }

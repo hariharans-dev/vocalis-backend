@@ -8,7 +8,7 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
       },
-      Invoked_request: {
+      invoked_request: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
         allowNull: false,
