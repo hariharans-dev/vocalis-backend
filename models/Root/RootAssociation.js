@@ -8,22 +8,43 @@ Root.hasOne(Root_credential, {
   as: "root_credential",
   onDelete: "CASCADE",
   hooks: true,
+  constraints: false,
 });
 
-Root_credential.belongsTo(Root);
+Root_credential.belongsTo(Root, {
+  foreignKey: "root_id",
+  as: "root_credential",
+  onDelete: "CASCADE",
+  hooks: true,
+  constraints: false,
+});
 
-// Root.hasMany(Subscription, {
-//   foreignKey: "root_id",
-//   target: "id",
-//   onDelete: "CASCADE",
-//   hooks: true,
-// });
+Root.hasMany(Subscription, {
+  foreignKey: "root_id",
+  onDelete: "CASCADE",
+  hooks: true,
+  constraints: false,
+});
 
-// Root.hasOne(Event, {
-//   foreignKey: "root_id",
-//   target: "id",
-//   onDelete: "CASCADE",
-//   hooks: true,
-// });
+Subscription.belongsTo(Root, {
+  foreignKey: "root_id",
+  onDelete: "CASCADE",
+  hooks: true,
+  constraints: false,
+});
+
+Root.hasMany(Event, {
+  foreignKey: "root_id",
+  onDelete: "CASCADE",
+  hooks: true,
+  constraints: false,
+});
+
+Event.belongsTo(Root, {
+  foreignKey: "root_id",
+  onDelete: "CASCADE",
+  hooks: true,
+  constraints: false,
+});
 
 // export { Root, Root_credential };

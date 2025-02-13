@@ -14,7 +14,7 @@ dotenv.config({ path: ".env.development" });
 const app = express();
 app.use(express.json());
 app.use(cors());
-sequelize.sync({ force: true });
+sequelize.sync();
 
 app.use("/root", rootRouter);
 app.use("/user", userRouter);
