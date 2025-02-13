@@ -4,7 +4,6 @@ import { requestValidation } from "../utility/requestValidation.js";
 import "../models/Event/EventAssociation.js";
 import Event from "../models/Event/Event.js";
 import Event_detail from "../models/Event/Event_detail.js";
-import { response } from "express";
 
 export default class EventController {
   async register(req, res) {

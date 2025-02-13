@@ -15,11 +15,11 @@ Root_credential.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    root_id: {
-      type: DataTypes.UUID,
-      unique: true,
-      allowNull: false,
-    },
+    // root_id: {
+    //   type: DataTypes.UUID,
+    //   unique: true,
+    //   allowNull: false,
+    // },
   },
   {
     sequelize,

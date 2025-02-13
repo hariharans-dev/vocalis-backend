@@ -8,4 +8,4 @@ Event.hasOne(Event_detail, {
   hooks: true,
 });
 
-// export default { Event, Event_detail };
+Event_detail.belongsTo(Event);
