@@ -14,7 +14,6 @@ const authMiddleware = async (req, res, next) => {
   }
 
   const authenticationToken = header[1];
-
   try {
     const data = jwt.decode(authenticationToken, process.env.JWT_SECRET);
     if (data == null) {
