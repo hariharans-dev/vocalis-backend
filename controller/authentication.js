@@ -107,7 +107,7 @@ export default class AuthenticationController {
       const id = response.id;
       const role = "user";
       const token = await createJWT(id, role);
-      return res.status(201).json(createApiResponse({ token: token }));
+      return res.status(201).json(createApiResponse({ token: token }, 201));
     } catch (error) {
       console.log(error);
       return res

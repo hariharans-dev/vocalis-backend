@@ -1,24 +1,10 @@
-// import Role from "./Role.js";
-// import Role_list from "./Role_list.js";
-// import Event from "../Event/Event.js";
-// import User from "../User/User.js";
+import Role from "./Role.js";
+import Role_list from "./Role_list.js";
+import Event from "../Event/Event.js";
 
-// Role.belongsToMany(Role_list, {
-//   foreignKey: "id",
-//   as: "role_list",
-//   target: "role_list_id",
-// });
+Role_list.hasOne(Role, { foreignKey: "role_list_id", as: "role" });
+Role.belongsTo(Role_list, { foreignKey: "role_list_id", as: "role_list" });
 
-// Role.belongsToMany(Event, {
-//   foreignKey: "id",
-//   as: "event",
-//   target: "event_id",
-// });
+Event.hasOne(Role, { foreignKey: "event_id", as: "role" })
+Role.belongsTo(Event, { foreignKey: "event_id", as: "event" })
 
-// Role.belongsToMany(User, {
-//   foreignKey: "id",
-//   as: "user",
-//   target: "user_id",
-// });
-
-// export { Role, Role_list };

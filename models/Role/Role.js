@@ -29,6 +29,12 @@ Role.init(
     modelName: "Role",
     tableName: "role",
     timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ["user_id", "event_id", "role_list_id"],
+      },
+    ],
   }
 );
 

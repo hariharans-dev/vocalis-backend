@@ -5,9 +5,9 @@ import authMiddleware from "../middleware/authentication.js";
 const eventRouter = express.Router();
 const eventcontroller = new EventController();
 
-eventRouter.get("/", authMiddleware, eventcontroller.get);
+// eventRouter.get("/", authMiddleware, eventcontroller.get);
 eventRouter.post("/", authMiddleware, eventcontroller.register);
-eventRouter.put("/", authMiddleware, eventcontroller.update);
+// eventRouter.put("/", authMiddleware, eventcontroller.update);
 eventRouter.delete("/", authMiddleware, eventcontroller.delete);
 
 export default eventRouter;

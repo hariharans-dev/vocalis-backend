@@ -30,12 +30,17 @@ export default class RootController {
         where: { id: id },
         attributes: { exclude: ["id", "createdAt", "updatedAt"] },
       });
+      if (data == null) {
+        return res
+          .status(404)
+          .json(createApiResponse({ response: "root not found" }, 404));
+      }
       data = data.toJSON();
       resBody = { ...resBody, ...data };
 
       return res
         .status(201)
-        .json(createApiResponse({ root_detail: resBody }, 201));
+        .json(createApiResponse({ root_data: resBody }, 201));
     } catch (error) {
       console.log(error);
       return res
@@ -106,7 +111,7 @@ export default class RootController {
     if (!validation) {
       return res
         .status(400)
-        .json(createApiResponse({ response: "undefined feilds found" }, 400));
+        .json(createApiResponse({ response: "undefined feilds" }, 400));
     }
 
     try {

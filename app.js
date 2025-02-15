@@ -9,18 +9,22 @@ import userRouter from "./routes/user.js";
 import authRouter from "./routes/authentication.js";
 import subscriptionRouter from "./routes/subscription.js";
 import eventRouter from "./routes/event.js";
+import roleRouter from "./routes/role.js";
 
 dotenv.config({ path: ".env.development" });
 const app = express();
 app.use(express.json());
 app.use(cors());
 sequelize.sync();
+// sequelize.sync({ force: true });
+
 
 app.use("/root", rootRouter);
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
 app.use("/subscription", subscriptionRouter);
 app.use("/event", eventRouter);
+app.use("/role", roleRouter);
 app.get("/test", async (req, res) => {
   const response = {
     status: 200,

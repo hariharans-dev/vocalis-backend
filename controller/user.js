@@ -144,4 +144,6 @@ export default class UserController {
         .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
+  async forgetpassword(req, res) {}
+  async forgetpasswordvalidation(req, res) {}
 }

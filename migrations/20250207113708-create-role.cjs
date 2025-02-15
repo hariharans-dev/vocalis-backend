@@ -31,8 +31,15 @@ module.exports = {
         allowNull: false,
       },
     });
+    await queryInterface.addConstraint("role", {
+      fields: ["user_id", "event_id", "role_list_id"],
+      type: "unique",
+      name: "unique_role",
+    });
+    s;
   },
   async down(queryInterface, Sequelize) {
+    await queryInterface.removeConstraint("role", "unique_role");
     await queryInterface.dropTable("role");
   },
 };
