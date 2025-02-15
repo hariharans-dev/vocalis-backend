@@ -151,11 +151,12 @@ export default class RootController {
         .status(403)
         .json(createApiResponse({ response: "restricted content" }, 403));
     }
-
     try {
       await Root.destroy({
         where: { id: id },
       });
+      // const response = await Root_credential.findAll({});
+      // console.log(response);
 
       return res
         .status(201)

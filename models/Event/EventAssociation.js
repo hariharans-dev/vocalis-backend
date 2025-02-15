@@ -8,4 +8,9 @@ Event.hasOne(Event_detail, {
   hooks: true,
 });
 
-// export default { Event, Event_detail };
+Event_detail.belongsTo(Event, {
+  foreignKey: "event_id",
+  as: "event_detail",
+  onDelete: "CASCADE",
+  hooks: true,
+});
