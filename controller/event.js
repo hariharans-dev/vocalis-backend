@@ -5,6 +5,10 @@ import "../models/Event/EventAssociation.js";
 import Event from "../models/Event/Event.js";
 import Event_detail from "../models/Event/Event_detail.js";
 
+import "../models/Role/RoleAssociation.js";
+import Role from "../models/Role/Role.js";
+import Role_list from "../models/Role/Role_list.js";
+
 export default class EventController {
   async register(req, res) {
     const id = req.middleware.id;
@@ -55,7 +59,63 @@ export default class EventController {
       }
     }
   }
-  async get(req, res) {}
+  async get(req, res) {
+    const id = req.middleware.id;
+    var role = req.middleware.role;
+    if (role == "user") {
+      try {
+        var roleresponse = await Role.findOne({
+          where: { user_id: id },
+          attributes: [],
+          include: [
+            {
+              model: Role_list,
+              as: "role_list",
+              attributes: ["name"],
+            },
+          ],
+        });
+      } catch (error) {
+        return res
+          .status(500)
+          .json(createApiResponse({ response: "internal server error" }, 500));
+      }
+      if (roleresponse == null) {
+        return res
+          .status(403)
+          .json(createApiResponse({ response: "restricted content" }, 403));
+      }
+      roleresponse = roleresponse.toJSON();
+      role = roleresponse.role_list.name;
+    }
+
+    const acceptedRole = ["root", "admin"];
+    if (!acceptedRole.includes(role)) {
+      return res
+        .status(403)
+        .json(createApiResponse({ response: "restricted content" }, 403));
+    }
+
+    const reqBody = req.query;
+    try {
+      var response = await Event.findOne({
+        where: { name: reqBody.event_name, "$role.user_id$": id },
+        include: { model: Role, as: "role" },
+      });
+      if (response == null) {
+        return res
+          .status(404)
+          .json(createApiResponse({ response: "no such event or role" }, 404));
+      }
+      response = response.toJSON();
+      console.log(response);
+      return res.send("success");
+    } catch (error) {
+      return res
+        .status(500)
+        .json(createApiResponse({ response: "internal server error" }, 500));
+    }
+  }
   async update(req, res) {}
   async delete(req, res) {
     const id = req.middleware.id;
@@ -96,7 +156,7 @@ export default class EventController {
       console.log(error);
       return res
         .status(500)
-        .json(createApiResponse({ response: "internal server error" }, 400));
+        .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
 }
