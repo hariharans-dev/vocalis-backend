@@ -42,7 +42,7 @@ export default class AuthenticationController {
       if (!response) {
         return res
           .status(401)
-          .json(createApiResponse({ response: "user not found" }, 401));
+          .json(createApiResponse({ response: "root not found" }, 401));
       }
       response = response.toJSON();
 
@@ -51,7 +51,7 @@ export default class AuthenticationController {
       if (!passwordMatch) {
         return res
           .status(401)
-          .json(createApiResponse({ response: "user not found" }, 401));
+          .json(createApiResponse({ response: "root not found" }, 401));
       }
 
       const id = response.id;
@@ -103,6 +103,79 @@ export default class AuthenticationController {
           .status(401)
           .json(createApiResponse({ response: "user not found" }, 401));
       }
+
+      const id = response.id;
+      const role = "user";
+      const token = await createJWT(id, role);
+      return res.status(201).json(createApiResponse({ token: token }, 201));
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json(createApiResponse({ response: "internal server error" }, 500));
+    }
+  }
+  async rootgooglelogin(req, res) {
+    const reqBody = req.body;
+    const requiredFeilds = ["email"];
+    const validation = requestValidation(requiredFeilds, reqBody);
+    if (!validation) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
+    }
+
+    const email = reqBody.email;
+
+    try {
+      var response = await Root.findOne({
+        where: { email: email },
+        attributes: {
+          exclude: ["email", "createdAt", "updatedAt", "name", "phone"],
+        },
+      });
+      if (!response) {
+        return res
+          .status(401)
+          .json(createApiResponse({ response: "root not found" }, 401));
+      }
+      response = response.toJSON();
+
+      const id = response.id;
+      const role = "root";
+      const token = await createJWT(id, role);
+
+      return res.status(201).json(createApiResponse({ token: token }, 200));
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json(createApiResponse({ response: "internal server error" }, 500));
+    }
+  }
+  async usergooglelogin(req, res) {
+    const reqBody = req.body;
+    const requiredFeilds = ["email"];
+    const validation = requestValidation(requiredFeilds, reqBody);
+    if (!validation) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
+    }
+
+    const email = reqBody.email;
+
+    try {
+      var response = await User.findOne({
+        where: { email: email },
+        attributes: ["id"],
+      });
+      if (!response) {
+        return res
+          .status(401)
+          .json(createApiResponse({ response: "user not found" }, 401));
+      }
+      response = response.toJSON();
 
       const id = response.id;
       const role = "user";

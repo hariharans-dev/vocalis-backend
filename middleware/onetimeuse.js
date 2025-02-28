@@ -17,17 +17,18 @@ const onetimeuseMiddleware = async (req, res, next) => {
   try {
     const data = jwt.decode(authenticationToken, process.env.JWT_SECRET);
     if (data == null) {
-      throw error;
+      throw new Error("Data is null");
     }
 
     const redisId = data.id;
 
     var redisData = await getKey(redisId);
-    console.log(redisData);
+
     if (!redisData) {
       throw error;
     }
     redisData = JSON.parse(redisData);
+
     await deleteKey(redisId);
 
     var reqBody = { id: redisData.id, role: redisData.role };

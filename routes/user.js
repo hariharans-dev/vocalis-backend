@@ -12,5 +12,11 @@ userRouter.post("/", usercontroller.register);
 userRouter.get("/", authMiddleware, usercontroller.get);
 userRouter.put("/", authMiddleware, usercontroller.update);
 userRouter.delete("/", onetimeuseMiddleware, usercontroller.delete);
+userRouter.post("/forgetpassword", usercontroller.forgetpassword);
+userRouter.put(
+  "/forgetpassword",
+  onetimeuseMiddleware,
+  usercontroller.forgetpasswordvalidation
+);
 
 export default userRouter;

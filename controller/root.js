@@ -190,7 +190,12 @@ export default class RootController {
       data = data.toJSON();
       const token = await createJWT(data.id, "forgetpassword");
 
-      const link = "" + process.env.FRONTEND_FORGETPASSWORD + "?key=" + token;
+      const link =
+        "" +
+        process.env.FRONTEND_FORGETPASSWORD +
+        "?key=" +
+        token +
+        "&role=root";
       await sendEmail(
         email,
         "Forgetpassword from " + process.env.WEBSITE,
@@ -208,8 +213,16 @@ export default class RootController {
   }
   async forgetpasswordvalidation(req, res) {
     const reqBody = req.body;
+
+    if (!reqBody.password) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
+    }
+
     const password = await bcrypt.hash(reqBody.password, 10);
     const id = req.middleware.id;
+    console.log(id);
 
     try {
       await Root_credential.update(

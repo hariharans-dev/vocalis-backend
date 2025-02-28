@@ -8,6 +8,8 @@ import "../models/User/UserAssociation.js";
 import User from "../models/User/User.js";
 import User_credential from "../models/User/User_credential.js";
 import { createJWT } from "../utility/createJWT.js";
+import { sendEmail } from "../utility/emailsender.js";
+import jwt from "jsonwebtoken";
 
 export default class UserController {
   async get(req, res) {
@@ -81,7 +83,6 @@ export default class UserController {
     }
   }
   async update(req, res) {
-    console.log(req.middleware);
     const id = req.middleware.id;
     const role = req.middleware.role;
     if (role != "user") {
@@ -144,6 +145,78 @@ export default class UserController {
         .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
-  async forgetpassword(req, res) {}
-  async forgetpasswordvalidation(req, res) {}
+  async forgetpassword(req, res) {
+    const reqBody = req.body;
+    const email = reqBody.email;
+    if (!email) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
+    }
+    try {
+      var data = await User.findOne({
+        where: { email: email },
+        attributes: {
+          exclude: ["email", "name", "phone", "createdAt", "updatedAt"],
+        },
+      });
+      if (!data) {
+        return res
+          .status(404)
+          .json(createApiResponse({ response: "email not registered" }, 404));
+      }
+      data = data.toJSON();
+      const token = await createJWT(data.id, "forgetpassword");
+      console.log(token);
+      const encodedToken = encodeURIComponent(token);
+
+      const link =
+        "" +
+        process.env.FRONTEND_FORGETPASSWORD +
+        "?key=" +
+        encodedToken +
+        "&role=user";
+      await sendEmail(
+        email,
+        "Forgetpassword from " + process.env.WEBSITE,
+        link
+      );
+
+      return res.json(
+        createApiResponse({ response: "forgetpassword email sent" }, 201)
+      );
+    } catch (error) {
+      return res
+        .status(500)
+        .json(createApiResponse("internal server error", 500));
+    }
+  }
+  async forgetpasswordvalidation(req, res) {
+    const reqBody = req.body;
+    console.log(reqBody);
+
+    if (!reqBody.password) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
+    }
+
+    const password = await bcrypt.hash(reqBody.password, 10);
+    const id = req.middleware.id;
+
+    try {
+      await User_credential.update(
+        { password: password },
+        { where: { user_id: id } }
+      );
+
+      return res
+        .status(201)
+        .json(createApiResponse({ response: "password changed" }, 201));
+    } catch (error) {
+      return res
+        .status(500)
+        .json(createApiResponse({ response: "internal server error" }, 500));
+    }
+  }
 }

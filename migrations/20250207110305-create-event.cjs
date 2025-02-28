@@ -16,6 +16,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      endpoint: {
+        type: Sequelize.STRING,
+        unique: true,
+      },
       createdAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,

@@ -2,6 +2,7 @@ import express from "express";
 import AuthenticationController from "../controller/authentication.js";
 import authMiddleware from "../middleware/authentication.js";
 import onetimeuseMiddleware from "../middleware/onetimeuse.js";
+import frontendMiddleware from "../middleware/frontend.js";
 
 const authRouter = express.Router();
 const authcontroller = new AuthenticationController();
@@ -10,6 +11,8 @@ const authcontroller = new AuthenticationController();
 
 authRouter.post("/root", authcontroller.rootlogin);
 authRouter.post("/user", authcontroller.userlogin);
+authRouter.post("/root/google", authcontroller.rootgooglelogin);
+authRouter.post("/user/google", authcontroller.usergooglelogin);
 authRouter.delete("/", onetimeuseMiddleware, authcontroller.logout);
 authRouter.get("/", authMiddleware, authcontroller.session);
 
