@@ -19,6 +19,10 @@ Event.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    endpoint: {
+      type: DataTypes.STRING,
+      unique: true,
+    },
   },
   {
     sequelize,
