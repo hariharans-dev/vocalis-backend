@@ -4,9 +4,15 @@ import createApiResponse from "../utility/httpResponse.js";
 import { deleteKey, getKey } from "../db/redis_connection.js";
 
 const onetimeuseMiddleware = async (req, res, next) => {
-  const header = req.header("Authorization")?.split(" ");
+  try {
+    const header = req.header("Authorization")?.split(" ");
 
-  if (!header) {
+    if (!header) {
+      return res
+        .status(401)
+        .json(createApiResponse("missing authentication header", 401));
+    }
+  } catch (error) {
     return res
       .status(401)
       .json(createApiResponse("missing authentication header", 401));
