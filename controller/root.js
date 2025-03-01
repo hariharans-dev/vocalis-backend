@@ -42,7 +42,7 @@ export default class RootController {
         .status(201)
         .json(createApiResponse({ root_data: resBody }, 201));
     } catch (error) {
-      console.log(error);
+      console.log("root.js error1: ", error);
       return res
         .status(500)
         .json(createApiResponse("internal server error", 500));
@@ -83,7 +83,7 @@ export default class RootController {
           )
         );
     } catch (error) {
-      console.log(error);
+      console.log("root.js error2: ", error);
       if (error.name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
@@ -130,6 +130,7 @@ export default class RootController {
         .status(201)
         .json(createApiResponse({ response: "update successfull" }, 201));
     } catch (error) {
+      console.log("root.js error3: ", error);
       if (error.name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
@@ -155,13 +156,12 @@ export default class RootController {
       await Root.destroy({
         where: { id: id },
       });
-      // const response = await Root_credential.findAll({});
-      // console.log(response);
 
       return res
         .status(201)
         .json(createApiResponse({ response: "root deleted successful" }, 201));
     } catch (error) {
+      console.log("root.js error4: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -206,6 +206,7 @@ export default class RootController {
         createApiResponse({ response: "forgetpassword email sent" }, 201)
       );
     } catch (error) {
+      console.log("root.js error5: ", error);
       return res
         .status(500)
         .json(createApiResponse("internal server error", 500));
@@ -222,7 +223,6 @@ export default class RootController {
 
     const password = await bcrypt.hash(reqBody.password, 10);
     const id = req.middleware.id;
-    console.log(id);
 
     try {
       await Root_credential.update(
@@ -234,6 +234,7 @@ export default class RootController {
         .status(201)
         .json(createApiResponse({ response: "password changed" }, 201));
     } catch (error) {
+      console.log("root.js error6: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));

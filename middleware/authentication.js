@@ -18,12 +18,12 @@ const authMiddleware = async (req, res, next) => {
       .status(401)
       .json(createApiResponse("missing authentication header", 401));
   }
-  
+
   const authenticationToken = header[1];
   try {
     const data = jwt.decode(authenticationToken, process.env.JWT_SECRET);
     if (data == null) {
-      throw error;
+      throw new Error("Null Error");
     }
 
     const redisId = data.id;
@@ -31,7 +31,7 @@ const authMiddleware = async (req, res, next) => {
 
     var redisData = await getKey(redisId);
     if (!redisData) {
-      throw error;
+      throw new Error("Null Error");
     }
     redisData = JSON.parse(redisData);
 
@@ -46,6 +46,7 @@ const authMiddleware = async (req, res, next) => {
     req.middleware = reqBody;
     next();
   } catch (error) {
+    console.log("middleware authentication.js error1: ", error);
     return res
       .status(403)
       .json(createApiResponse("invalid authentication token"));

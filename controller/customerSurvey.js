@@ -10,7 +10,6 @@ import Event from "../models/Event/Event.js";
 import "../models/Role/RoleAssociation.js";
 import Role from "../models/Role/Role.js";
 import Role_list from "../models/Role/Role_list.js";
-import { where } from "sequelize";
 
 export default class CustomerController {
   async registerEndpoint(req, res) {
@@ -46,6 +45,7 @@ export default class CustomerController {
           ],
         });
       } catch (error) {
+        console.log("customerSurvey.js error1: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -70,6 +70,7 @@ export default class CustomerController {
             .json(createApiResponse({ response: "event not found" }, 404));
         }
       } catch (error) {
+        console.log("customerSurvey.js error2: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -101,6 +102,7 @@ export default class CustomerController {
         .status(202)
         .json(createApiResponse({ response: "endpoint created" }, 202));
     } catch (error) {
+      console.log("customerSurvey.js error3: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));

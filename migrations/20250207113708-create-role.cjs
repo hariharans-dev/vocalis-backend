@@ -36,9 +36,8 @@ module.exports = {
       type: "unique",
       name: "unique_role",
     });
-    s;
   },
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.removeConstraint("role", "unique_role");
     await queryInterface.dropTable("role");
   },
