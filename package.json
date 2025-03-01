@@ -1,7 +1,14 @@
 {
   "type": "module",
   "devDependencies": {
-    "sequelize-cli": "^6.6.2"
+    "sequelize-cli": "^6.6.2",
+    "terser": "^5.39.0"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "build": "terser app.js -o dist/app.min.js",
+    "prod": "node dist/app.min.js",
+    "prebuild": "mkdir -p dist"
   },
   "dependencies": {
     "-": "^0.0.1",
