@@ -6,20 +6,19 @@ import { refreshJWT } from "../utility/createJWT.js";
 
 const authMiddleware = async (req, res, next) => {
   var header;
-  try {
-    header = req.header("Authorization")?.split(" ");
+  const authHeader = req.header("Authorization");
 
-    if (!header) {
-      return res
-        .status(401)
-        .json(createApiResponse("missing authentication header", 401));
-    }
-  } catch (error) {
+  if (authHeader) {
+    header = authHeader.split(" ");
+  } else {
+    header = null;
+  }
+  if (!header) {
     return res
       .status(401)
       .json(createApiResponse("missing authentication header", 401));
   }
-
+  
   const authenticationToken = header[1];
   try {
     const data = jwt.decode(authenticationToken, process.env.JWT_SECRET);
