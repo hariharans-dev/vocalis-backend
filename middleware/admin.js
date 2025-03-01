@@ -1,9 +1,15 @@
 import createApiResponse from "../utility/httpResponse.js";
 
 const adminMiddleware = async (req, res, next) => {
-  const header = req.header("Authorization")?.split(" ");
+  try {
+    const header = req.header("Authorization")?.split(" ");
 
-  if (!header) {
+    if (!header) {
+      return res
+        .status(401)
+        .json(createApiResponse("missing authentication header", 401));
+    }
+  } catch (error) {
     return res
       .status(401)
       .json(createApiResponse("missing authentication header", 401));
