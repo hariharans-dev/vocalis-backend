@@ -5,8 +5,9 @@ import { getKey } from "../db/redis_connection.js";
 import { refreshJWT } from "../utility/createJWT.js";
 
 const authMiddleware = async (req, res, next) => {
+  var header;
   try {
-    const header = req.header("Authorization")?.split(" ");
+    header = req.header("Authorization")?.split(" ");
 
     if (!header) {
       return res

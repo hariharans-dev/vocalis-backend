@@ -1,8 +1,9 @@
 import createApiResponse from "../utility/httpResponse.js";
 
 const frontendMiddleware = async (req, res, next) => {
+  var header;
   try {
-    const header = req.header("Authorization")?.split(" ");
+    header = req.header("Authorization")?.split(" ");
 
     if (!header) {
       return res

@@ -1,8 +1,9 @@
 import createApiResponse from "../utility/httpResponse.js";
 
 const adminMiddleware = async (req, res, next) => {
+  var header;
   try {
-    const header = req.header("Authorization")?.split(" ");
+    header = req.header("Authorization")?.split(" ");
 
     if (!header) {
       return res

@@ -4,8 +4,9 @@ import createApiResponse from "../utility/httpResponse.js";
 import { deleteKey, getKey } from "../db/redis_connection.js";
 
 const onetimeuseMiddleware = async (req, res, next) => {
+  var header;
   try {
-    const header = req.header("Authorization")?.split(" ");
+    header = req.header("Authorization")?.split(" ");
 
     if (!header) {
       return res
