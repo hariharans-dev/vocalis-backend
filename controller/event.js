@@ -48,7 +48,7 @@ export default class EventController {
       }
       return res.status(201).json(createApiResponse(resBody, 201));
     } catch (error) {
-      console.log("event.js error1: ",error);
+      console.log("event.js error1: ", error);
       if (error.name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
@@ -77,7 +77,7 @@ export default class EventController {
           ],
         });
       } catch (error) {
-        console.log("event.js error2: ",error);
+        console.log("event.js error2: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -99,20 +99,45 @@ export default class EventController {
     }
 
     const reqBody = req.query;
+    var response;
     try {
-      var response = await Event.findOne({
-        where: { name: reqBody.event_name, "$role.user_id$": id },
-        include: { model: Role, as: "role" },
-      });
+      if (role == "root") {
+        response = await Event.findOne({
+          where: { name: reqBody.event_name, root_id: id },
+          attributes: ["name", "endpoint"],
+          include: [
+            {
+              model: Event_detail,
+              as: "event_detail",
+              attributes: ["location", "phone", "email", "description", "date"],
+            },
+          ],
+        });
+      } else {
+        response = await Event.findOne({
+          where: { name: reqBody.event_name, "$role.user_id$": id },
+          attributes: ["name", "endpoint"],
+          include: [
+            { model: Role, as: "role", attributes: [] },
+            {
+              model: Event_detail,
+              as: "event_detail",
+              attributes: ["location", "phone", "email", "description", "date"],
+            },
+          ],
+        });
+      }
       if (response == null) {
         return res
           .status(404)
           .json(createApiResponse({ response: "no such event or role" }, 404));
       }
       response = response.toJSON();
-      return res.send("success");
+      return res
+        .status(200)
+        .json(createApiResponse({ response: response }, 200));
     } catch (error) {
-      console.log("event.js error3: ",error);
+      console.log("event.js error3: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -155,7 +180,7 @@ export default class EventController {
       }
       return res.status(202).json(createApiResponse(resBody, 202));
     } catch (error) {
-      console.log("event.js error4: ",error);
+      console.log("event.js error4: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));

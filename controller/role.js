@@ -81,7 +81,9 @@ export default class RoleController {
           where: { root_id: id, name: reqBody.event_name },
         });
         if (eventresponse == null) {
-          return res.status(404).json({ response: "event not found" }, 400);
+          return res
+            .status(404)
+            .json(createApiResponse({ response: "event not found" }, 400));
         }
         eventresponse = eventresponse.toJSON();
         eventId = eventresponse.id;
@@ -125,7 +127,9 @@ export default class RoleController {
         where: { name: reqBody.role },
       });
       if (roleresponse == null) {
-        return res.status(404).json({ response: "role not found" }, 400);
+        return res
+          .status(404)
+          .json(createApiResponse({ response: "role not found" }, 400));
       }
       roleresponse = roleresponse.toJSON();
       roleId = roleresponse.id;
