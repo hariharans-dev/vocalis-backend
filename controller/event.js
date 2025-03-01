@@ -2,8 +2,13 @@ import createApiResponse from "../utility/httpResponse.js";
 import { requestValidation } from "../utility/requestValidation.js";
 
 import "../models/Event/EventAssociation.js";
+import "../models/Role/RoleAssociation.js";
+
 import Event from "../models/Event/Event.js";
 import Event_detail from "../models/Event/Event_detail.js";
+
+import Role from "../models/Role/Role.js";
+import Role_list from "../models/Role/Role_list.js";
 
 export default class EventController {
   async register(req, res) {
@@ -43,7 +48,7 @@ export default class EventController {
       }
       return res.status(201).json(createApiResponse(resBody, 201));
     } catch (error) {
-      console.log(error);
+      console.log("event.js error1: ",error);
       if (error.name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
@@ -72,6 +77,7 @@ export default class EventController {
           ],
         });
       } catch (error) {
+        console.log("event.js error2: ",error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -104,15 +110,15 @@ export default class EventController {
           .json(createApiResponse({ response: "no such event or role" }, 404));
       }
       response = response.toJSON();
-      console.log(response);
       return res.send("success");
     } catch (error) {
+      console.log("event.js error3: ",error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
-  async update(req, res) {}
+  // async update(req, res) {}
   async delete(req, res) {
     const id = req.middleware.id;
     const role = req.middleware.role;
@@ -149,7 +155,7 @@ export default class EventController {
       }
       return res.status(202).json(createApiResponse(resBody, 202));
     } catch (error) {
-      console.log(error);
+      console.log("event.js error4: ",error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));

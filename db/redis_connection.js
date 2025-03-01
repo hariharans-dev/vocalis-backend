@@ -7,33 +7,21 @@ const client = createClient({
   },
 });
 
-client.on("error", (err) => {
-  console.error("Error:", err);
+client.on("error", (error) => {
+  console.log("redis_connection.js error1: ", error);
 });
 
 await client.connect();
 
 async function setKey(key, value, expiration) {
-  try {
-    return await client.set(key, value, { EX: expiration, NX: true });
-  } catch (err) {
-    console.error("Error setting key:", err);
-  }
+  return await client.set(key, value, { EX: expiration, NX: true });
 }
 
 async function getKey(key) {
-  try {
-    return await client.get(key);
-  } catch (err) {
-    console.error("Error getting key:", err);
-  }
+  return await client.get(key);
 }
 
 async function deleteKey(key) {
-  try {
-    return client.del(key);
-  } catch (error) {
-    console.error("Error getting key:", err);
-  }
+  return client.del(key);
 }
 export { setKey, getKey, deleteKey, client };

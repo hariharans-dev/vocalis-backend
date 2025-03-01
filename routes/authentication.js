@@ -2,7 +2,6 @@ import express from "express";
 import AuthenticationController from "../controller/authentication.js";
 import authMiddleware from "../middleware/authentication.js";
 import onetimeuseMiddleware from "../middleware/onetimeuse.js";
-import frontendMiddleware from "../middleware/frontend.js";
 
 const authRouter = express.Router();
 const authcontroller = new AuthenticationController();

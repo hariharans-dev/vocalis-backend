@@ -9,7 +9,6 @@ import User from "../models/User/User.js";
 import User_credential from "../models/User/User_credential.js";
 import { createJWT } from "../utility/createJWT.js";
 import { sendEmail } from "../utility/emailsender.js";
-import jwt from "jsonwebtoken";
 
 export default class UserController {
   async get(req, res) {
@@ -35,6 +34,7 @@ export default class UserController {
       resBody = { ...resBody, ...data };
       return res.status(201).json(createApiResponse(resBody, 201));
     } catch (error) {
+      console.log("user.js error1: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -71,6 +71,7 @@ export default class UserController {
 
       return res.status(200).json(createApiResponse({ token: token }, 200));
     } catch (error) {
+      console.log("user.js error2: ", error);
       if (error.name == "SequelizeUniqueConstraintError") {
         return res
           .status(409)
@@ -110,6 +111,7 @@ export default class UserController {
         .status(201)
         .json(createApiResponse({ response: "update successfull" }, 201));
     } catch (error) {
+      console.log("user.js error3: ", error);
       if (error.name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
@@ -140,6 +142,7 @@ export default class UserController {
         .status(201)
         .json(createApiResponse({ response: "user deleted successful" }, 201));
     } catch (error) {
+      console.log("user.js error4: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -167,7 +170,6 @@ export default class UserController {
       }
       data = data.toJSON();
       const token = await createJWT(data.id, "forgetpassword");
-      console.log(token);
       const encodedToken = encodeURIComponent(token);
 
       const link =
@@ -186,6 +188,7 @@ export default class UserController {
         createApiResponse({ response: "forgetpassword email sent" }, 201)
       );
     } catch (error) {
+      console.log("user.js error5: ", error);
       return res
         .status(500)
         .json(createApiResponse("internal server error", 500));
@@ -193,7 +196,6 @@ export default class UserController {
   }
   async forgetpasswordvalidation(req, res) {
     const reqBody = req.body;
-    console.log(reqBody);
 
     if (!reqBody.password) {
       return res
@@ -214,6 +216,7 @@ export default class UserController {
         .status(201)
         .json(createApiResponse({ response: "password changed" }, 201));
     } catch (error) {
+      console.log("user.js error6: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));

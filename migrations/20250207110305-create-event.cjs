@@ -37,7 +37,7 @@ module.exports = {
       name: "unique_root_id_name",
     });
   },
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.removeConstraint("event", "unique_root_id_name");
     await queryInterface.dropTable("event");
   },

@@ -17,10 +17,11 @@ export default class RoleController {
   async register(req, res) {
     const id = req.middleware.id;
     var role = req.middleware.role;
+    var roleresponse;
 
     if (role == "user") {
       try {
-        var roleresponse = await Role.findOne({
+        roleresponse = await Role.findOne({
           where: { user_id: id },
           attributes: [],
           include: [
@@ -32,6 +33,7 @@ export default class RoleController {
           ],
         });
       } catch (error) {
+        console.log("role.js error1: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -72,9 +74,10 @@ export default class RoleController {
       var userId;
       var roleId;
       let isUserCreated = false;
+      var eventresponse;
 
       if (role == "root") {
-        var eventresponse = await Event.findOne({
+        eventresponse = await Event.findOne({
           where: { root_id: id, name: reqBody.event_name },
         });
         if (eventresponse == null) {
@@ -83,7 +86,7 @@ export default class RoleController {
         eventresponse = eventresponse.toJSON();
         eventId = eventresponse.id;
       } else {
-        var eventresponse = await Event.findOne({
+        eventresponse = await Event.findOne({
           where: { name: reqBody.event_name, "$role.user_id$": id },
           include: { model: Role, as: "role" },
         });
@@ -118,18 +121,15 @@ export default class RoleController {
         userId = userresponse.id;
       }
 
-      console.log(reqBody.role);
-      var roleresponse = await Role_list.findOne({
+      roleresponse = await Role_list.findOne({
         where: { name: reqBody.role },
       });
       if (roleresponse == null) {
         return res.status(404).json({ response: "role not found" }, 400);
       }
       roleresponse = roleresponse.toJSON();
-      console.log(roleresponse);
       roleId = roleresponse.id;
 
-      console.log(eventId, userId, roleId);
       await Role.create({
         user_id: userId,
         role_list_id: roleId,
@@ -144,7 +144,7 @@ export default class RoleController {
         .status(201)
         .json(createApiResponse({ response: "role created" }, 201));
     } catch (error) {
-      // console.log(error);
+      console.log("role.js error2: ", error);
       if (error.name == "SequelizeUniqueConstraintError") {
         return res
           .status(409)
@@ -157,8 +157,8 @@ export default class RoleController {
         .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
-  async get(req, res) {}
-  async delete(req, res) {}
+  // async get(req, res) {}
+  // async delete(req, res) {}
   async getRole(req, res) {
     const token = req.middleware.token;
     try {
@@ -170,7 +170,7 @@ export default class RoleController {
       }
       return res.status(200).json(createApiResponse(resBody, 200));
     } catch (error) {
-      console.log(error);
+      console.log("role.js error3: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -192,7 +192,7 @@ export default class RoleController {
         .status(201)
         .json(createApiResponse({ response: "role created" }, 201));
     } catch (error) {
-      console.log(error);
+      console.log("role.js error4: ", error);
       if (error.name == "SequelizeUniqueConstraintError") {
         return res
           .status(409)
