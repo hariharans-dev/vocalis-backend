@@ -189,12 +189,13 @@ export default class RootController {
       }
       data = data.toJSON();
       const token = await createJWT(data.id, "forgetpassword");
+      const encodedToken = encodeURIComponent(token);
 
       const link =
         "" +
         process.env.FRONTEND_FORGETPASSWORD +
         "?key=" +
-        token +
+        encodedToken +
         "&role=root";
       await sendEmail(
         email,
