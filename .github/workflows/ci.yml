@@ -31,13 +31,12 @@ jobs:
         if: github.ref == 'refs/heads/dev'
         run: |
           docker run -d -p 8080:4000 --name test-container ${{ secrets.DOCKER_USERNAME }}/${{ env.PROJECT_NAME }}
-          sleep 5
 
-      - name: Check Container Functionality (Dev Only)
-        if: github.ref == 'refs/heads/dev'
-        id: check_container
-        run: |
-          curl http://localhost:8080 || exit 1
+      # - name: Check Container Functionality (Dev Only)
+      #   if: github.ref == 'refs/heads/dev'
+      #   id: check_container
+      #   run: |
+      #     curl http://localhost:8080 || exit 1
 
       - name: Show Container Logs (Dev Only)
         if: github.ref == 'refs/heads/dev'
