@@ -11,7 +11,9 @@ client.on("error", (error) => {
   console.log("redis_connection.js error1: ", error);
 });
 
-await client.connect();
+(async () => {
+  await client.connect();
+})();
 
 async function setKey(key, value, expiration) {
   return await client.set(key, value, { EX: expiration, NX: true });
