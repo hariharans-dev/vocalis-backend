@@ -4,8 +4,10 @@ FROM ubuntu:22.04
 # Set working directory
 WORKDIR /app
 
-# Install Node.js and npm
-RUN apt update && apt install -y nodejs npm
+# Install Node.js and npm from NodeSource
+RUN apt update && apt install -y curl
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt install -y nodejs
 
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
