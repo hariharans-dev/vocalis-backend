@@ -1,5 +1,5 @@
 import express from "express";
-import CustomerController from "../controller/customerSurvey.js";
+import CustomerController from "../controller/audienceSurvey.js";
 import authMiddleware from "../middleware/authentication.js";
 
 const customerRouter = express.Router();
@@ -10,6 +10,7 @@ customerRouter.post(
   authMiddleware,
   customercontroller.registerEndpoint
 );
-// customerRouter.post("/data", customercontroller.registerData);
+customerRouter.get("/endpoint", authMiddleware, customercontroller.getEndpoint);
+customerRouter.post("/data", customercontroller.registerData);
 
 export default customerRouter;

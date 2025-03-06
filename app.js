@@ -10,7 +10,7 @@ import authRouter from "./routes/authentication.js";
 import subscriptionRouter from "./routes/subscription.js";
 import eventRouter from "./routes/event.js";
 import roleRouter from "./routes/role.js";
-import customerRouter from "./routes/customerSurvey.js";
+import customerRouter from "./routes/audienceSurvey.js";
 
 dotenv.config({ path: ".env.development" });
 const app = express();
