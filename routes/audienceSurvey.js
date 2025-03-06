@@ -2,15 +2,16 @@ import express from "express";
 import CustomerController from "../controller/audienceSurvey.js";
 import authMiddleware from "../middleware/authentication.js";
 
-const customerRouter = express.Router();
-const customercontroller = new CustomerController();
+const audienceRouter = express.Router();
+const audiencecontroller = new CustomerController();
 
-customerRouter.post(
+audienceRouter.post(
   "/endpoint",
   authMiddleware,
-  customercontroller.registerEndpoint
+  audiencecontroller.registerEndpoint
 );
-customerRouter.get("/endpoint", authMiddleware, customercontroller.getEndpoint);
-customerRouter.post("/data", customercontroller.registerData);
-customerRouter.get("/data", authMiddleware, customercontroller.getData);
-export default customerRouter;
+audienceRouter.get("/endpoint", authMiddleware, audiencecontroller.getEndpoint);
+audienceRouter.post("/data", audiencecontroller.registerData);
+audienceRouter.get("/data", authMiddleware, audiencecontroller.getData);
+audienceRouter.post("/report", authMiddleware, audiencecontroller.createReport);
+export default audienceRouter;

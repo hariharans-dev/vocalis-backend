@@ -10,7 +10,7 @@ import authRouter from "./routes/authentication.js";
 import subscriptionRouter from "./routes/subscription.js";
 import eventRouter from "./routes/event.js";
 import roleRouter from "./routes/role.js";
-import customerRouter from "./routes/audienceSurvey.js";
+import audienceRouter from "./routes/audienceSurvey.js";
 
 dotenv.config({ path: ".env.development" });
 const app = express();
@@ -33,7 +33,7 @@ app.use("/auth", authRouter);
 app.use("/subscription", subscriptionRouter);
 app.use("/event", eventRouter);
 app.use("/role", roleRouter);
-app.use("/customer", customerRouter);
+app.use("/customer", audienceRouter);
 app.get("/test", async (req, res) => {
   const response = {
     status: 200,
