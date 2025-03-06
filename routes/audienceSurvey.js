@@ -12,5 +12,5 @@ customerRouter.post(
 );
 customerRouter.get("/endpoint", authMiddleware, customercontroller.getEndpoint);
 customerRouter.post("/data", customercontroller.registerData);
-
+customerRouter.get("/data", authMiddleware, customercontroller.getData);
 export default customerRouter;
