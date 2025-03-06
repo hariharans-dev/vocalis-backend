@@ -16,7 +16,9 @@ const authMiddleware = async (req, res, next) => {
   if (!header) {
     return res
       .status(401)
-      .json(createApiResponse("missing authentication header", 401));
+      .json(
+        createApiResponse({ response: "missing authentication header" }, 401)
+      );
   }
 
   const authenticationToken = header[1];
@@ -49,7 +51,9 @@ const authMiddleware = async (req, res, next) => {
     console.log("middleware authentication.js error1: ", error);
     return res
       .status(403)
-      .json(createApiResponse("invalid authentication token"));
+      .json(
+        createApiResponse({ response: "invalid authentication token" }, 403)
+      );
   }
 };
 

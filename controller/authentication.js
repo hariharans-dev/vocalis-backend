@@ -109,7 +109,6 @@ export default class AuthenticationController {
       const token = await createJWT(id, role);
       return res.status(201).json(createApiResponse({ token: token }, 201));
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
