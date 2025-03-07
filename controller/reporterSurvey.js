@@ -1,251 +1,106 @@
-import rand from "random-key";
-
-import createApiResponse from "../utility/httpResponse.js";
 import {
-  requestValidation,
   requestParameter,
+  requestValidation,
 } from "../utility/requestValidation.js";
+import { Sequelize } from "sequelize";
+import createApiResponse from "../utility/httpResponse.js";
+import { voice_text } from "../utility/insights.js";
 
 import "../models/Event/EventAssociation.js";
 import Event from "../models/Event/Event.js";
-// import Event_detail from "../models/Event/Event_detail.js";
 
 import "../models/Role/RoleAssociation.js";
 import Role from "../models/Role/Role.js";
 import Role_list from "../models/Role/Role_list.js";
 
-import "../models/Survey/SurveyAssociation.js";
+import "../models/Survey//SurveyAssociation.js";
 import Audience from "../models/Survey/Audience.js";
-import Audience_survey from "../models/Survey/Audience_survey.js";
-import { Sequelize } from "sequelize";
+import Reporter_survey from "../models/Survey/Reporter_survey.js";
+import { where } from "sequelize";
 
-export default class AudienceController {
-  async registerEndpoint(req, res) {
+export default class ReporterController {
+  async createData(req, res) {
     const id = req.middleware.id;
-    var role = req.middleware.role;
+    const role = req.middleware.role;
     const reqBody = req.body;
-    var event_id;
-    var event_endpoint;
+    console.log(reqBody);
 
-    const requiredFeilds = ["event_name"];
-    if (!requestValidation(requiredFeilds, reqBody)) {
-      return res
-        .status(400)
-        .json(createApiResponse({ response: "required feilds missing" }, 400));
-    }
-
-    if (role == "user") {
-      try {
-        var roleResponse = await Role.findOne({
-          where: { user_id: id },
-          attributes: [],
-          include: [
-            {
-              model: Role_list,
-              as: "role_list",
-              attributes: ["name"],
-            },
-            {
-              model: Event,
-              where: { name: reqBody.event_name },
-              as: "event",
-            },
-          ],
-        });
-      } catch (error) {
-        console.log("customerSurvey.js error1: ", error);
-        return res
-          .status(500)
-          .json(createApiResponse({ response: "internal server error" }, 500));
-      }
-      if (roleResponse == null) {
-        return res
-          .status(403)
-          .json(createApiResponse({ response: "restricted content" }, 403));
-      }
-      roleResponse = roleResponse.toJSON();
-      role = roleResponse["role_list"]["name"];
-      event_id = roleResponse["event"]["id"];
-      event_endpoint = roleResponse["event"]["endpoint"];
-    } else {
-      try {
-        var response = await Event.findOne({
-          where: { root_id: id, name: reqBody.event_name },
-        });
-        if (response == null) {
-          return res
-            .status(404)
-            .json(createApiResponse({ response: "event not found" }, 404));
-        }
-      } catch (error) {
-        console.log("customerSurvey.js error2: ", error);
-        return res
-          .status(500)
-          .json(createApiResponse({ response: "internal server error" }, 500));
-      }
-      response = response.toJSON();
-      event_id = response["id"];
-      event_endpoint = response["endpoint"];
-    }
-
-    const acceptedRole = ["root", "admin"];
-    if (!acceptedRole.includes(role)) {
-      return res
-        .status(403)
-        .json(createApiResponse({ response: "restricted content" }, 403));
-    }
-
-    if (event_endpoint != null) {
-      return res
-        .status(409)
-        .json(createApiResponse({ response: "event endpoint exists" }, 409));
-    }
-    event_endpoint = rand.generate(36);
-    try {
-      await Event.update(
-        { endpoint: event_endpoint },
-        { where: { id: event_id } }
-      );
-      return res
-        .status(202)
-        .json(createApiResponse({ response: "endpoint created" }, 202));
-    } catch (error) {
-      console.log("customerSurvey.js error3: ", error);
-      return res
-        .status(500)
-        .json(createApiResponse({ response: "internal server error" }, 500));
-    }
-  }
-  async getEndpoint(req, res) {
-    const id = req.middleware.id;
-    var role = req.middleware.role;
-    const reqBody = req.body;
-    var event_endpoint;
-
-    const requiredFeilds = ["event_name"];
-    if (!requestValidation(requiredFeilds, reqBody)) {
-      return res
-        .status(400)
-        .json(createApiResponse({ response: "required feilds missing" }, 400));
-    }
-
-    if (role == "user") {
-      try {
-        var roleResponse = await Role.findOne({
-          where: { user_id: id },
-          attributes: [],
-          include: [
-            {
-              model: Role_list,
-              as: "role_list",
-              attributes: ["name"],
-            },
-            {
-              model: Event,
-              where: { name: reqBody.event_name },
-              as: "event",
-            },
-          ],
-        });
-      } catch (error) {
-        console.log("customerSurvey.js error1: ", error);
-        return res
-          .status(500)
-          .json(createApiResponse({ response: "internal server error" }, 500));
-      }
-      if (roleResponse == null) {
-        return res
-          .status(403)
-          .json(createApiResponse({ response: "restricted content" }, 403));
-      }
-      roleResponse = roleResponse.toJSON();
-      role = roleResponse["role_list"]["name"];
-      event_id = roleResponse["event"]["id"];
-      event_endpoint = roleResponse["event"]["endpoint"];
-    } else {
-      try {
-        var response = await Event.findOne({
-          where: { root_id: id, name: reqBody.event_name },
-        });
-        if (response == null) {
-          return res
-            .status(404)
-            .json(createApiResponse({ response: "event not found" }, 404));
-        }
-      } catch (error) {
-        console.log("customerSurvey.js error2: ", error);
-        return res
-          .status(500)
-          .json(createApiResponse({ response: "internal server error" }, 500));
-      }
-      response = response.toJSON();
-      event_id = response["id"];
-      event_endpoint = response["endpoint"];
-    }
-
-    const acceptedRole = ["root", "admin"];
-    if (!acceptedRole.includes(role)) {
-      return res
-        .status(403)
-        .json(createApiResponse({ response: "restricted content" }, 403));
-    }
-
-    return res.status(200).json(createApiResponse({ event_endpoint }, 200));
-  }
-  async registerData(req, res) {
-    const reqBody = req.body;
-    const requestParameterFeilds = [
-      "message",
-      "event_endpoint",
+    const parameterFeilds = [
       "name",
-      "mobile",
       "email",
+      "mobile",
       "address",
+      "event_name",
+      "file",
     ];
-    if (!requestParameter(requestParameterFeilds, reqBody)) {
+    if (!requestParameter(parameterFeilds, reqBody)) {
       return res
         .status(400)
-        .json(createApiResponse({ response: "unwanted feilds" }, 400));
+        .json(createApiResponse({ response: "unwanted request feilds" }, 400));
     }
-    const requiredFeilds = ["message", "event_endpoint"];
+
+    const requiredFeilds = ["event_name", "file"];
     if (!requestValidation(requiredFeilds, reqBody)) {
       return res
-        .status(400)
-        .json(createApiResponse({ response: "required feilds missing" }, 400));
+        .status(404)
+        .json(createApiResponse({ response: "required feilds misssing" }, 404));
     }
 
     var response;
     var event_id;
     var audience_id;
+    var survey_id;
     try {
-      response = await Event.findOne({
-        where: { endpoint: reqBody.event_endpoint },
-      });
-      if (response) {
+      if (role == "root") {
+        response = await Event.findOne({ where: { root_id: id } });
+        if (!response) {
+          return res
+            .status(404)
+            .json(createApiResponse({ response: "event not found" }, 404));
+        }
         response = response.toJSON();
         event_id = response.id;
       } else {
-        return res
-          .status(404)
-          .json(
-            createApiResponse({ response: "event_endpoint not found" }, 404)
-          );
+        response = await Role.findOne({ where: { user_id: id } });
+        if (!response) {
+          return res
+            .status(404)
+            .json(createApiResponse({ response: "event not found" }, 404));
+        }
+        response = response.toJSON();
+        event_id = response.event_id;
       }
 
-      const { message, ...data } = reqBody;
-      response = await Audience.create(data);
+      const { event_name, file, ...audience_data } = reqBody;
+      response = await Audience.create(audience_data);
+      if (!response) {
+        return res
+          .status(500)
+          .json(createApiResponse({ response: "internal server error" }, 500));
+      }
+
       response = response.toJSON();
       audience_id = response.id;
 
-      await Audience_survey.create({
-        data: reqBody.message,
-        event_id,
+      response = await Reporter_survey.create({
         audience_id,
+        user_id: id,
+        user_type: role,
+        event_id,
       });
+      if (!response) {
+        return res
+          .status(500)
+          .json(createApiResponse({ response: "internal server error" }, 500));
+      }
+      response = response.toJSON();
+      survey_id = response.id;
+
+      await voice_text(survey_id, reqBody.file);
 
       return res
         .status(201)
-        .json(createApiResponse({ response: "feedback sent" }, 201));
+        .json(createApiResponse({ response: "voice feedback stored" }, 201));
     } catch (error) {
       console.log(error);
       return res
@@ -256,10 +111,12 @@ export default class AudienceController {
   async getData(req, res) {
     const id = req.middleware.id;
     var role = req.middleware.role;
+    const baseRole = role;
     const reqBody = req.body;
     var event_id;
+    var option = reqBody.option;
 
-    const requestParameterFeilds = ["event_name", "limit"];
+    const requestParameterFeilds = ["event_name", "limit", "option"];
     if (!requestParameter(requestParameterFeilds, reqBody)) {
       if (!requestParameter(requestParameterFeilds, reqBody)) {
         return res
@@ -327,40 +184,46 @@ export default class AudienceController {
       event_id = response["id"];
     }
 
-    const acceptedRole = ["root", "admin"];
-    if (!acceptedRole.includes(role)) {
-      return res
-        .status(403)
-        .json(createApiResponse({ response: "restricted content" }, 403));
-    }
-
     var response;
-    try {
-      var options = {
-        where: { event_id: event_id },
+    var options;
+    if (role == "reporter" || (option && option == "self")) {
+      options = {
+        where: { event_id, user_id: id, user_type: baseRole },
         attributes: ["data"],
         include: {
           model: Audience,
           as: "audience",
-          attributes: ["name", "mobile", "email", "address"],
+          attributes: ["name", "email", "mobile", "address"],
         },
       };
-
       if (reqBody.limit !== undefined && reqBody.limit !== null) {
         options.limit = parseInt(req.body.limit, 10);
       }
-
-      response = await Audience_survey.findAll(options);
-      if (response) {
-        response = response.map((res) => res.toJSON());
+    } else {
+      options = {
+        where: { event_id },
+        attributes: ["data"],
+        include: {
+          model: Audience,
+          as: "audience",
+          attributes: ["name", "email", "mobile", "address"],
+        },
+      };
+      if (reqBody.limit !== undefined && reqBody.limit !== null) {
+        options.limit = parseInt(req.body.limit, 10);
       }
-      return res.send(response);
+    }
+    try {
+      response = await Reporter_survey.findAll(options);
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
     }
+    if (response) {
+      response = response.map((res) => res.toJSON());
+    }
+    return res.status(200).json(createApiResponse(response, 200));
   }
   async createReport(req, res) {
     const id = req.middleware.id;
@@ -458,7 +321,7 @@ export default class AudienceController {
         options["where"]["createdAt"] = { [Sequelize.Op.gte]: threshold };
       }
 
-      response = await Audience_survey.findAll(options);
+      response = await Reporter_survey.findAll(options);
       if (response) {
         response = response.map((res) => res.toJSON());
       }
@@ -482,5 +345,5 @@ export default class AudienceController {
         .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
-  async getReport(req, res) {}
+  //   async getReport(req, res) {}
 }

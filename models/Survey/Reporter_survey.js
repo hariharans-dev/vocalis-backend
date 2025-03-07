@@ -26,6 +26,10 @@ Reporter_survey.init(
       type: DataTypes.UUID,
       allowNull: false,
     },
+    user_type: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   },
   {
     sequelize,

@@ -11,6 +11,7 @@ import subscriptionRouter from "./routes/subscription.js";
 import eventRouter from "./routes/event.js";
 import roleRouter from "./routes/role.js";
 import audienceRouter from "./routes/audienceSurvey.js";
+import reporterRouter from "./routes/reporterSurvey.js";
 
 dotenv.config({ path: ".env.development" });
 const app = express();
@@ -33,7 +34,8 @@ app.use("/auth", authRouter);
 app.use("/subscription", subscriptionRouter);
 app.use("/event", eventRouter);
 app.use("/role", roleRouter);
-app.use("/customer", audienceRouter);
+app.use("/audience", audienceRouter);
+app.use("/reporter", reporterRouter);
 app.get("/test", async (req, res) => {
   const response = {
     status: 200,

@@ -15,12 +15,16 @@ Audience_survey.belongsTo(Audience, {
   as: "audience",
 });
 
-// Audience.hasOne(Reporter_survey, {
-//   foreignKey: "audience_id",
-//   as: "reporter_survey",
-//   target: "id",
-//   onDelete: "CASCADE",
-// });
+Audience.hasOne(Reporter_survey, {
+  foreignKey: "audience_id",
+  as: "reporter_survey",
+  onDelete: "CASCADE",
+});
+
+Reporter_survey.belongsTo(Audience, {
+  foreignKey: "audience_id",
+  as: "audience",
+});
 
 Event.hasMany(Audience_survey, {
   foreignKey: "event_id",

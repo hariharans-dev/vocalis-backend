@@ -23,6 +23,10 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
       },
+      user_type: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       createdAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
