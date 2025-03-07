@@ -346,7 +346,7 @@ export default class AudienceController {
         },
       };
 
-      if (req.body.limit !== undefined && req.body.limit !== null) {
+      if (reqBody.limit !== undefined && reqBody.limit !== null) {
         options.limit = parseInt(req.body.limit, 10);
       }
 

@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
 });
 const fileFilter = (req, file, cb) => {
   if (file.mimetype === "audio/mpeg" || file.mimetype === "audio/mp3") {
-    cb(null, true); 
+    cb(null, true);
   } else {
     cb(new Error("Only MP3 files are allowed!"), false);
   }
@@ -43,7 +43,7 @@ reporterRouter.post(
     }
   }
 );
-// reporterRouter.get("/data", authMiddleware, reportercontroller.);
+reporterRouter.get("/data", authMiddleware, reportercontroller.getData);
 // reporterRouter.put("/", authMiddleware, eventcontroller.update);
 // reporterRouter.delete("/", authMiddleware, eventcontroller.delete);
 
