@@ -44,7 +44,7 @@ reporterRouter.post(
   }
 );
 reporterRouter.get("/data", authMiddleware, reportercontroller.getData);
-// reporterRouter.put("/", authMiddleware, eventcontroller.update);
+reporterRouter.post("/report", authMiddleware, reportercontroller.createReport);
 // reporterRouter.delete("/", authMiddleware, eventcontroller.delete);
 
 export default reporterRouter;

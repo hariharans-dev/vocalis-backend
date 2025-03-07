@@ -461,7 +461,8 @@ export default class AudienceController {
       response = await Audience_survey.findAll(options);
       if (response) {
         response = response.map((res) => res.toJSON());
-      } else {
+      }
+      if (!response[0]) {
         return res
           .status(200)
           .json(createApiResponse({ response: "no feedback" }, 200));
