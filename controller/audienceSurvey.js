@@ -19,7 +19,7 @@ import Audience from "../models/Survey/Audience.js";
 import Audience_survey from "../models/Survey/Audience_survey.js";
 import { Sequelize } from "sequelize";
 
-export default class CustomerController {
+export default class AudienceController {
   async registerEndpoint(req, res) {
     const id = req.middleware.id;
     var role = req.middleware.role;
@@ -481,4 +481,5 @@ export default class CustomerController {
         .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
+  async getReport(req, res) {}
 }
