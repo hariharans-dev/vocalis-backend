@@ -1,6 +1,7 @@
 import rand from "random-key";
 
 import createApiResponse from "../utility/httpResponse.js";
+import { text_insight } from "../utility/insights.js";
 import {
   requestValidation,
   requestParameter,
@@ -17,6 +18,7 @@ import Role_list from "../models/Role/Role_list.js";
 import "../models/Survey/SurveyAssociation.js";
 import Audience from "../models/Survey/Audience.js";
 import Audience_survey from "../models/Survey/Audience_survey.js";
+import Report from "../models/Survey/Report.js";
 import { Sequelize } from "sequelize";
 
 export default class AudienceController {
@@ -121,6 +123,7 @@ export default class AudienceController {
     var role = req.middleware.role;
     const reqBody = req.body;
     var event_endpoint;
+    var event_id;
 
     const requiredFeilds = ["event_name"];
     if (!requestValidation(requiredFeilds, reqBody)) {
@@ -468,7 +471,20 @@ export default class AudienceController {
           .json(createApiResponse({ response: "no feedback" }, 200));
       }
 
+      response = response.map((res) => res.data);
+      var data = { feedback: response };
+
       // response send to generateReport for generating report
+      response = await Report.create({
+        event_id,
+        user_id: id,
+        user_type: role,
+        report_type: "audience",
+      });
+      response = response.toJSON();
+      data["id"] = response.id;
+
+      text_insight(data);
 
       return res
         .status(201)

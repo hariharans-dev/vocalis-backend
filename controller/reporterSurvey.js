@@ -4,7 +4,7 @@ import {
 } from "../utility/requestValidation.js";
 import { Sequelize } from "sequelize";
 import createApiResponse from "../utility/httpResponse.js";
-import { voice_text } from "../utility/insights.js";
+import { voice_text, text_insight } from "../utility/insights.js";
 
 import "../models/Event/EventAssociation.js";
 import Event from "../models/Event/Event.js";
@@ -16,7 +16,7 @@ import Role_list from "../models/Role/Role_list.js";
 import "../models/Survey//SurveyAssociation.js";
 import Audience from "../models/Survey/Audience.js";
 import Reporter_survey from "../models/Survey/Reporter_survey.js";
-import { where } from "sequelize";
+import Report from "../models/Survey/Report.js";
 
 export default class ReporterController {
   async createData(req, res) {
@@ -332,6 +332,20 @@ export default class ReporterController {
       }
 
       // response send to generateReport for generating report
+
+      response = response.map((res) => res.data);
+      var data = { feedback: response };
+
+      response = await Report.create({
+        event_id,
+        user_id: id,
+        user_type: role,
+        report_type: "reporter",
+      });
+      response = response.toJSON();
+      data["id"] = response.id;
+
+      text_insight(data);
 
       return res
         .status(201)
