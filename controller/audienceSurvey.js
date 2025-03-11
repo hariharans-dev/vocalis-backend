@@ -371,7 +371,7 @@ export default class AudienceController {
     const reqBody = req.body;
     var event_id;
 
-    const requestParameterFeilds = ["event_name", "duration"];
+    const requestParameterFeilds = ["event_name", "duration", "view"];
     if (!requestParameter(requestParameterFeilds, reqBody)) {
       if (!requestParameter(requestParameterFeilds, reqBody)) {
         return res
@@ -483,6 +483,11 @@ export default class AudienceController {
       });
       response = response.toJSON();
       data["id"] = response.id;
+      if (reqBody["view"]) {
+        data["view"] = reqBody["view"];
+      } else {
+        data["view"] = "overall";
+      }
 
       text_insight(data);
 
@@ -498,5 +503,118 @@ export default class AudienceController {
         .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
-  async getReport(req, res) {}
+  async getReport(req, res) {
+    const id = req.middleware.id;
+    var role = req.middleware.role;
+    const reqBody = req.body;
+    var event_id;
+
+    const requestParameterFeilds = ["event_name", "limit", "view"];
+    if (!requestParameter(requestParameterFeilds, reqBody)) {
+      if (!requestParameter(requestParameterFeilds, reqBody)) {
+        return res
+          .status(400)
+          .json(createApiResponse({ response: "unwanted feilds" }, 400));
+      }
+    }
+    const requiredFeilds = ["event_name"];
+    if (!requestValidation(requiredFeilds, reqBody)) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
+    }
+
+    if (role == "user") {
+      try {
+        var roleResponse = await Role.findOne({
+          where: { user_id: id },
+          attributes: [],
+          include: [
+            {
+              model: Role_list,
+              as: "role_list",
+              attributes: ["name"],
+            },
+            {
+              model: Event,
+              where: { name: reqBody.event_name },
+              as: "event",
+            },
+          ],
+        });
+      } catch (error) {
+        console.log("customerSurvey.js error1: ", error);
+        return res
+          .status(500)
+          .json(createApiResponse({ response: "internal server error" }, 500));
+      }
+      if (roleResponse == null) {
+        return res
+          .status(403)
+          .json(createApiResponse({ response: "restricted content" }, 403));
+      }
+      roleResponse = roleResponse.toJSON();
+      role = roleResponse["role_list"]["name"];
+      event_id = roleResponse["event"]["id"];
+    } else {
+      try {
+        var response = await Event.findOne({
+          where: { root_id: id, name: reqBody.event_name },
+        });
+        if (response == null) {
+          return res
+            .status(404)
+            .json(createApiResponse({ response: "event not found" }, 404));
+        }
+      } catch (error) {
+        console.log("customerSurvey.js error2: ", error);
+        return res
+          .status(500)
+          .json(createApiResponse({ response: "internal server error" }, 500));
+      }
+      response = response.toJSON();
+      event_id = response["id"];
+    }
+
+    const acceptedRole = ["root", "admin"];
+    if (!acceptedRole.includes(role)) {
+      return res
+        .status(403)
+        .json(createApiResponse({ response: "restricted content" }, 403));
+    }
+    var response;
+    const view = reqBody["view"];
+    try {
+      var options = {
+        where: { event_id, report_type: "audience" },
+        attributes: ["general_opinion", "overall_summary"],
+      };
+      if (view == "quick") {
+        options["where"]["summary"] = null;
+      } else {
+        options["attributes"].push("summary");
+      }
+      if (reqBody["limit"] !== undefined && reqBody["limit"] !== null) {
+        options["limit"] = parseInt(reqBody["limit"], 10);
+      }
+      console.log(options);
+
+      response = await Report.findAll(options);
+      if (response) {
+        response = response.map((res) => res.toJSON());
+      }
+      if (!response[0]) {
+        return res
+          .status(200)
+          .json(createApiResponse({ response: "no report generated" }, 200));
+      }
+
+      return res.status(201).json(createApiResponse(response, 201));
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json(createApiResponse({ response: "internal server error" }, 500));
+    }
+  }
 }

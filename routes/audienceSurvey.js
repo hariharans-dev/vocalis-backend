@@ -15,4 +15,5 @@ audienceRouter.post("/data", audiencecontroller.registerData);
 audienceRouter.get("/data", authMiddleware, audiencecontroller.getData);
 audienceRouter.post("/report", authMiddleware, audiencecontroller.createReport);
 audienceRouter.get("/report", authMiddleware, audiencecontroller.getReport);
+
 export default audienceRouter;
