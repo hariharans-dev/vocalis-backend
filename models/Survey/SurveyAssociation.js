@@ -1,6 +1,7 @@
 import Audience from "./Audience.js";
 import Audience_survey from "./Audience_survey.js";
 import Reporter_survey from "./Reporter_survey.js";
+import Report from "./Report.js";
 import Event from "../Event/Event.js";
 import User from "../User/User.js";
 
@@ -33,6 +34,10 @@ Event.hasMany(Audience_survey, {
 });
 
 Audience_survey.belongsTo(Event, { foreignKey: "event_id", as: "event" });
+
+// Report.hasOne(Event, { foreignKey: "event_id", as: "event" });
+
+// Event.belongsTo(Report, { foreignKey: "event_id", as: "report" });
 
 // Event.hasMany(Reporter_survey, {
 //   foreignKey: "event_id",

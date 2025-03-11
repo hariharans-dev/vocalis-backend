@@ -2,7 +2,7 @@ import redis from "redis";
 import fs from "fs";
 import path from "path";
 
-async function publishMessage(queue, data, id, audioData) {
+async function publishMessage(queue, data) {
   const client = redis.createClient({
     socket: {
       host: "0.0.0.0",
@@ -15,7 +15,7 @@ async function publishMessage(queue, data, id, audioData) {
   await client.connect();
 
   await client.rPush(queue, JSON.stringify(data));
-  console.log(`Published audio message`);
+  console.log(`Published message`);
 
   await client.quit();
 }
@@ -34,4 +34,9 @@ async function voice_text(survey_id, file) {
   }
 }
 
-export { voice_text };
+async function text_insight(data) {
+  console.log(data);
+  await publishMessage("text-insight", data);
+}
+
+export { voice_text, text_insight };
