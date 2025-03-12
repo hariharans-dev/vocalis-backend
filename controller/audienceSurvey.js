@@ -357,7 +357,7 @@ export default class AudienceController {
       if (response) {
         response = response.map((res) => res.toJSON());
       }
-      return res.send(response);
+      return res.status(200).json(createApiResponse(response, 200));
     } catch (error) {
       console.log(error);
       return res

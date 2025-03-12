@@ -116,7 +116,7 @@ export default class ReporterController {
     var event_id;
     var option = reqBody.option;
 
-    const requestParameterFeilds = ["event_name", "limit", "option"];
+    const requestParameterFeilds = ["event_name", "limit", "option", "count"];
     if (!requestParameter(requestParameterFeilds, reqBody)) {
       if (!requestParameter(requestParameterFeilds, reqBody)) {
         return res
@@ -125,6 +125,23 @@ export default class ReporterController {
       }
     }
 
+    if (reqBody["count"] == "true") {
+      try {
+        console.log(id);
+        console.log(role);
+        response = await Reporter_survey.count({
+          where: { user_id: id },
+        });
+        return res
+          .status(200)
+          .json(createApiResponse({ count: response }, 200));
+      } catch (error) {
+        console.log(error);
+        return res
+          .status(500)
+          .json(createApiResponse({ response: "internal server error" }, 500));
+      }
+    }
     const requiredFeilds = ["event_name"];
     if (!requestValidation(requiredFeilds, reqBody)) {
       return res
@@ -186,6 +203,7 @@ export default class ReporterController {
 
     var response;
     var options;
+
     if (role == "reporter" || (option && option == "self")) {
       options = {
         where: { event_id, user_id: id, user_type: baseRole },

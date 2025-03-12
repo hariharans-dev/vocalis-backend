@@ -43,8 +43,12 @@ reporterRouter.post(
     }
   }
 );
-reporterRouter.get("/data", authMiddleware, reportercontroller.getData);
+reporterRouter.post("/data/get", authMiddleware, reportercontroller.getData);
 reporterRouter.post("/report", authMiddleware, reportercontroller.createReport);
-reporterRouter.get("/report", authMiddleware, reportercontroller.getReport);
+reporterRouter.post(
+  "/report/get",
+  authMiddleware,
+  reportercontroller.getReport
+);
 
 export default reporterRouter;

@@ -98,7 +98,7 @@ export default class EventController {
         .json(createApiResponse({ response: "restricted content" }, 403));
     }
 
-    const reqBody = req.query;
+    const reqBody = req.body;
     var response;
     try {
       if (role == "root") {
