@@ -193,8 +193,11 @@ export default class AuthenticationController {
       .json(createApiResponse({ response: "logout successful" }, 201));
   }
   async session(req, res) {
+    const role = req.middleware.role;
     return res
       .status(201)
-      .json(createApiResponse({ response: "session is active" }, 201));
+      .json(
+        createApiResponse({ role: role, response: "session is active" }, 201)
+      );
   }
 }

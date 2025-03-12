@@ -6,7 +6,7 @@ import adminMiddleware from "../middleware/admin.js";
 const roleRouter = express.Router();
 const rolecontroller = new RoleController();
 
-// roleRouter.get("/", rolecontroller.get);
+roleRouter.get("/", authMiddleware, rolecontroller.get);
 roleRouter.post("/", authMiddleware, rolecontroller.register);
 // roleRouter.delete("/", rolecontroller.delete);
 roleRouter.get("/rolelist", authMiddleware, rolecontroller.getRole);
