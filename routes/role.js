@@ -9,6 +9,7 @@ const rolecontroller = new RoleController();
 roleRouter.get("/", authMiddleware, rolecontroller.get);
 roleRouter.post("/", authMiddleware, rolecontroller.register);
 // roleRouter.delete("/", rolecontroller.delete);
+roleRouter.get("/list", authMiddleware, rolecontroller.getUserRole);
 roleRouter.get("/rolelist", authMiddleware, rolecontroller.getRole);
 roleRouter.post("/rolelist", adminMiddleware, rolecontroller.createRole);
 

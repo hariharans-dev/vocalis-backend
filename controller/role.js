@@ -235,6 +235,56 @@ export default class RoleController {
 
     return res.status(200).json(createApiResponse({ role }, 200));
   }
+  async getUserRole(req, res) {
+    const reqBody = req.body;
+    const id = req.middleware.id;
+    const role = req.middleware.role;
+    if (role != "user") {
+      return res
+        .status(403)
+        .json(createApiResponse({ response: "restricted content" }, 403));
+    }
+
+    const requestParameterFeilds = ["count"];
+    if (!requestParameter(requestParameterFeilds, reqBody)) {
+      if (!requestParameter(requestParameterFeilds, reqBody)) {
+        return res
+          .status(400)
+          .json(createApiResponse({ response: "unwanted feilds" }, 400));
+      }
+    }
+
+    var response = await Role.findAll({
+      where: { user_id: id },
+      attributes: [],
+      include: [
+        { model: Role_list, as: "role_list", attributes: ["name"] },
+        { model: Event, as: "event", attributes: ["name", "endpoint"] },
+      ],
+    });
+    if (response) {
+      response = response.map((res) => res.toJSON());
+    }
+    if (reqBody["count"] && reqBody["count"] == "true") {
+      var total_count = 0;
+      var admin_count = 0;
+      response.map((item) => {
+        total_count += 1;
+        if (item["role_list"]["name"] == "admin") admin_count += 1;
+      });
+      return res.status(200).json(
+        createApiResponse(
+          {
+            total_count,
+            admin_count,
+            reporter_count: total_count - admin_count,
+          },
+          200
+        )
+      );
+    }
+    return res.status(200).json(createApiResponse(response, 200));
+  }
   // async delete(req, res) {}
   async getRole(req, res) {
     const token = req.middleware.token;
