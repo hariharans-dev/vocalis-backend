@@ -23,12 +23,11 @@ export default class ReporterController {
     const id = req.middleware.id;
     const role = req.middleware.role;
     const reqBody = req.body;
-    console.log(reqBody);
 
     const parameterFeilds = [
       "name",
       "email",
-      "mobile",
+      "phone",
       "address",
       "event_name",
       "file",
@@ -38,6 +37,8 @@ export default class ReporterController {
         .status(400)
         .json(createApiResponse({ response: "unwanted request feilds" }, 400));
     }
+
+    console.log(reqBody);
 
     const requiredFeilds = ["event_name", "file"];
     if (!requestValidation(requiredFeilds, reqBody)) {
@@ -127,8 +128,6 @@ export default class ReporterController {
 
     if (reqBody["count"] == "true") {
       try {
-        console.log(id);
-        console.log(role);
         response = await Reporter_survey.count({
           where: { user_id: id },
         });
@@ -136,7 +135,6 @@ export default class ReporterController {
           .status(200)
           .json(createApiResponse({ count: response }, 200));
       } catch (error) {
-        console.log(error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -211,7 +209,7 @@ export default class ReporterController {
         include: {
           model: Audience,
           as: "audience",
-          attributes: ["name", "email", "mobile", "address"],
+          attributes: ["name", "email", "phone", "address"],
         },
       };
       if (reqBody.limit !== undefined && reqBody.limit !== null) {
@@ -224,7 +222,7 @@ export default class ReporterController {
         include: {
           model: Audience,
           as: "audience",
-          attributes: ["name", "email", "mobile", "address"],
+          attributes: ["name", "email", "phone", "address"],
         },
       };
       if (reqBody.limit !== undefined && reqBody.limit !== null) {
@@ -383,7 +381,7 @@ export default class ReporterController {
     const reqBody = req.body;
     var event_id;
 
-    const requestParameterFeilds = ["event_name", "limit"];
+    const requestParameterFeilds = ["event_name", "limit", "count"];
     if (!requestParameter(requestParameterFeilds, reqBody)) {
       if (!requestParameter(requestParameterFeilds, reqBody)) {
         return res
@@ -391,13 +389,20 @@ export default class ReporterController {
           .json(createApiResponse({ response: "unwanted feilds" }, 400));
       }
     }
-    const requiredFeilds = ["event_name"];
-    if (!requestValidation(requiredFeilds, reqBody)) {
-      return res
-        .status(400)
-        .json(createApiResponse({ response: "required feilds missing" }, 400));
+    if (reqBody["count"] == "true") {
+      try {
+        var response = await Report.count({
+          where: { user_id: id, user_type: role },
+        });
+        return res
+          .status(200)
+          .json(createApiResponse({ count: response }, 200));
+      } catch (error) {
+        return res
+          .status(500)
+          .json(createApiResponse({ response: "internal server error" }, 500));
+      }
     }
-
     if (role == "user") {
       try {
         var roleResponse = await Role.findOne({

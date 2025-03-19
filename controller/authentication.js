@@ -68,6 +68,7 @@ export default class AuthenticationController {
   }
   async userlogin(req, res) {
     const reqBody = req.body;
+    console.log(reqBody);
     const requiredFeilds = ["email", "password"];
     const validation = requestValidation(requiredFeilds, reqBody);
     if (!validation) {

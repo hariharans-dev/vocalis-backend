@@ -133,9 +133,7 @@ export default class EventController {
           .json(createApiResponse({ response: "no such event or role" }, 404));
       }
       response = response.toJSON();
-      return res
-        .status(200)
-        .json(createApiResponse({ response: response }, 200));
+      return res.status(200).json(createApiResponse(response , 200));
     } catch (error) {
       console.log("event.js error3: ", error);
       return res

@@ -14,7 +14,7 @@ Audience.init(
     name: {
       type: DataTypes.STRING,
     },
-    mobile: {
+    phone: {
       type: DataTypes.STRING,
     },
     email: {
