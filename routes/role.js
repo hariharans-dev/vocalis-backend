@@ -10,7 +10,7 @@ roleRouter.post("/get", authMiddleware, rolecontroller.get);
 roleRouter.post("/", authMiddleware, rolecontroller.register);
 // roleRouter.delete("/", rolecontroller.delete);
 roleRouter.post("/list", authMiddleware, rolecontroller.getUserRole);
-roleRouter.get("/rolelist", authMiddleware, rolecontroller.getRole);
+roleRouter.get("/rolelist", rolecontroller.getRole);
 roleRouter.post("/rolelist", adminMiddleware, rolecontroller.createRole);
 
 export default roleRouter;
