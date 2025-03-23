@@ -15,6 +15,7 @@ import {
   requestParameter,
 } from "../utility/requestValidation.js";
 import createApiResponse from "../utility/httpResponse.js";
+import { where } from "sequelize";
 
 export default class RoleController {
   async register(req, res) {
@@ -254,12 +255,11 @@ export default class RoleController {
     }
 
     const requestParameterFeilds = ["count"];
+
     if (!requestParameter(requestParameterFeilds, reqBody)) {
-      if (!requestParameter(requestParameterFeilds, reqBody)) {
-        return res
-          .status(400)
-          .json(createApiResponse({ response: "unwanted feilds" }, 400));
-      }
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "unwanted feilds" }, 400));
     }
 
     var response;
@@ -318,6 +318,51 @@ export default class RoleController {
       );
     }
     return res.status(200).json(createApiResponse(response, 200));
+  }
+  async getEventRole(req, res) {
+    const reqBody = req.body;
+    const id = req.middleware.id;
+    const role = req.middleware.role;
+
+    const requiredFeilds = ["event_name"];
+    const validation = requestValidation(requiredFeilds, reqBody);
+    if (!validation) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
+    }
+
+    if (role != "root") {
+      return res
+        .status(500)
+        .json(createApiResponse({ response: "restricted access" }, 409));
+    }
+    try {
+      var event_response = await Event.findOne({
+        where: { name: reqBody.event_name },
+      });
+      event_response = event_response.toJSON();
+      if (!event_response) {
+        return res
+          .status(404)
+          .json(createApiResponse({ response: "event not found" }, 404));
+      }
+      var role_response = await Role.findAll({
+        where: { event_id: event_response.id },
+        include: [
+          { model: Role_list, as: "role_list", attributes: ["name"] },
+          { model: User, as: "user", attributes: ["email"] },
+        ],
+        attributes: [],
+      });
+      role_response = role_response.map((resposne) => resposne.toJSON());
+      return res.status(200).json(createApiResponse(role_response, 200));
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json(createApiResponse({ response: "internal server error" }, 500));
+    }
   }
   // async delete(req, res) {}
   async getRole(req, res) {
