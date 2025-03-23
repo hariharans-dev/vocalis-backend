@@ -239,10 +239,18 @@ export default class RoleController {
     const reqBody = req.body;
     const id = req.middleware.id;
     const role = req.middleware.role;
-    if (role != "user") {
-      return res
-        .status(403)
-        .json(createApiResponse({ response: "restricted content" }, 403));
+
+    if (role == "root") {
+      var response = await Event.findAll({
+        where: { root_id: id },
+        attributes: ["name"],
+      });
+      response = response.map((event) => event.toJSON());
+      var data = {};
+      response.map((event) => {
+        data = { ...data, event: event, role_list: { name: "root" } };
+      });
+      console.log(response);
     }
 
     const requestParameterFeilds = ["count"];
@@ -254,18 +262,44 @@ export default class RoleController {
       }
     }
 
-    var response = await Role.findAll({
-      where: { user_id: id },
-      attributes: [],
-      include: [
-        { model: Role_list, as: "role_list", attributes: ["name"] },
-        { model: Event, as: "event", attributes: ["name", "endpoint"] },
-      ],
-    });
-    if (response) {
-      response = response.map((res) => res.toJSON());
+    var response;
+
+    if (role == "root") {
+      response = await Event.findAll({
+        where: { root_id: id },
+        attributes: ["name"],
+      });
+      if (response) {
+        response = response.map((event) => {
+          event = event.toJSON();
+          return { event, role_list: { name: "root" } };
+        });
+      }
+    } else {
+      response = await Role.findAll({
+        where: { user_id: id },
+        attributes: [],
+        include: [
+          { model: Role_list, as: "role_list", attributes: ["name"] },
+          { model: Event, as: "event", attributes: ["name"] },
+        ],
+      });
+      if (response) {
+        response = response.map((res) => res.toJSON());
+      }
     }
+
     if (reqBody["count"] && reqBody["count"] == "true") {
+      if (role == "root") {
+        return res.status(200).json(
+          createApiResponse(
+            {
+              total_count: response.length,
+            },
+            200
+          )
+        );
+      }
       var total_count = 0;
       var admin_count = 0;
       response.map((item) => {
@@ -287,16 +321,12 @@ export default class RoleController {
   }
   // async delete(req, res) {}
   async getRole(req, res) {
-    const token = req.middleware.token;
     try {
       var response = await Role_list.findAll({
         attributes: ["name", "description"],
       });
       response = response.map((plan) => plan.toJSON());
       var resBody = { role_list: response };
-      if (token) {
-        resBody = { ...resBody, token: token };
-      }
       return res.status(200).json(createApiResponse(resBody, 200));
     } catch (error) {
       console.log("role.js error3: ", error);

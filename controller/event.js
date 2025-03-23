@@ -91,7 +91,7 @@ export default class EventController {
       role = roleresponse.role_list.name;
     }
 
-    const acceptedRole = ["root", "admin"];
+    const acceptedRole = ["root", "admin", "reporter"];
     if (!acceptedRole.includes(role)) {
       return res
         .status(403)

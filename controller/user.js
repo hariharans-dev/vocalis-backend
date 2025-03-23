@@ -94,8 +94,10 @@ export default class UserController {
     const token = req.middleware.token;
 
     const reqBody = req.body;
+    console.log(reqBody);
     const requiredFeild = ["name", "phone", "email", "password"];
     const validation = requestParameter(requiredFeild, reqBody);
+    console.log(validation);
     if (!validation) {
       return res
         .status(400)
