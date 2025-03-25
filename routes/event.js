@@ -7,7 +7,7 @@ const eventcontroller = new EventController();
 
 eventRouter.post("/get", authMiddleware, eventcontroller.get);
 eventRouter.post("/", authMiddleware, eventcontroller.register);
-// eventRouter.put("/", authMiddleware, eventcontroller.update);
+eventRouter.put("/", authMiddleware, eventcontroller.update);
 eventRouter.delete("/", authMiddleware, eventcontroller.delete);
 
 export default eventRouter;
