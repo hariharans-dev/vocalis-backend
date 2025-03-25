@@ -25,8 +25,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
-sequelize.sync();
-// sequelize.sync({ force: true });
+// sequelize.sync();
+sequelize.sync({ force: true });
 
 app.use("/root", rootRouter);
 app.use("/user", userRouter);

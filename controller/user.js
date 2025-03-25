@@ -4,7 +4,10 @@ import {
   requestValidation,
   requestParameter,
 } from "../utility/requestValidation.js";
+
 import "../models/User/UserAssociation.js";
+import "../models/Role/RoleAssociation.js";
+
 import User from "../models/User/User.js";
 import User_credential from "../models/User/User_credential.js";
 import { createJWT } from "../utility/createJWT.js";
