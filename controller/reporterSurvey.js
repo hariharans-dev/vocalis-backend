@@ -464,7 +464,12 @@ export default class ReporterController {
     var response;
     try {
       var options = {
-        where: { user_id: id, user_type: role, event_id },
+        where: {
+          user_id: id,
+          user_type: role,
+          event_id,
+          report_type: "reporter",
+        },
         attributes: ["general_opinion", "summary", "overall_summary"],
       };
       if (reqBody.limit !== undefined && reqBody.limit !== null) {
