@@ -14,10 +14,16 @@ const storage = multer.diskStorage({
   },
 });
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype === "audio/mpeg" || file.mimetype === "audio/mp3") {
+  console.log("File mimetype:", file.mimetype);
+  if (
+    file.mimetype === "audio/mpeg" ||
+    file.mimetype === "audio/mp3" ||
+    file.mimetype === "audio/webm" ||
+    file.mimetype === "video/webm"
+  ) {
     cb(null, true);
   } else {
-    cb(new Error("Only MP3 files are allowed!"), false);
+    cb(new Error("Only webm and mp3 files are allowed!"), false);
   }
 };
 const upload = multer({
@@ -43,8 +49,12 @@ reporterRouter.post(
     }
   }
 );
-reporterRouter.get("/data", authMiddleware, reportercontroller.getData);
+reporterRouter.post("/data/get", authMiddleware, reportercontroller.getData);
 reporterRouter.post("/report", authMiddleware, reportercontroller.createReport);
-reporterRouter.get("/report", authMiddleware, reportercontroller.getReport);
+reporterRouter.post(
+  "/report/get",
+  authMiddleware,
+  reportercontroller.getReport
+);
 
 export default reporterRouter;

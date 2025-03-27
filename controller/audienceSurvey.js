@@ -197,11 +197,12 @@ export default class AudienceController {
   }
   async registerData(req, res) {
     const reqBody = req.body;
+    console.log(reqBody);
     const requestParameterFeilds = [
       "message",
       "event_endpoint",
       "name",
-      "mobile",
+      "phone",
       "email",
       "address",
     ];
@@ -345,7 +346,7 @@ export default class AudienceController {
         include: {
           model: Audience,
           as: "audience",
-          attributes: ["name", "mobile", "email", "address"],
+          attributes: ["name", "phone", "email", "address"],
         },
       };
 
@@ -357,7 +358,7 @@ export default class AudienceController {
       if (response) {
         response = response.map((res) => res.toJSON());
       }
-      return res.send(response);
+      return res.status(200).json(createApiResponse(response, 200));
     } catch (error) {
       console.log(error);
       return res
@@ -588,6 +589,7 @@ export default class AudienceController {
       var options = {
         where: { event_id, report_type: "audience" },
         attributes: ["general_opinion", "overall_summary"],
+        order: [["createdAt", "DESC"]],
       };
       if (view == "quick") {
         options["where"]["summary"] = null;

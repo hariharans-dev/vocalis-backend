@@ -1,5 +1,10 @@
 import createApiResponse from "../utility/httpResponse.js";
-import { requestValidation } from "../utility/requestValidation.js";
+import {
+  requestValidation,
+  requestParameter,
+} from "../utility/requestValidation.js";
+
+import sequelize from "../db/db_connection.js";
 
 import "../models/Event/EventAssociation.js";
 import "../models/Role/RoleAssociation.js";
@@ -9,6 +14,7 @@ import Event_detail from "../models/Event/Event_detail.js";
 
 import Role from "../models/Role/Role.js";
 import Role_list from "../models/Role/Role_list.js";
+import { where } from "sequelize";
 
 export default class EventController {
   async register(req, res) {
@@ -91,14 +97,14 @@ export default class EventController {
       role = roleresponse.role_list.name;
     }
 
-    const acceptedRole = ["root", "admin"];
+    const acceptedRole = ["root", "admin", "reporter"];
     if (!acceptedRole.includes(role)) {
       return res
         .status(403)
         .json(createApiResponse({ response: "restricted content" }, 403));
     }
 
-    const reqBody = req.query;
+    const reqBody = req.body;
     var response;
     try {
       if (role == "root") {
@@ -133,9 +139,7 @@ export default class EventController {
           .json(createApiResponse({ response: "no such event or role" }, 404));
       }
       response = response.toJSON();
-      return res
-        .status(200)
-        .json(createApiResponse({ response: response }, 200));
+      return res.status(200).json(createApiResponse(response, 200));
     } catch (error) {
       console.log("event.js error3: ", error);
       return res
@@ -143,7 +147,104 @@ export default class EventController {
         .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
-  // async update(req, res) {}
+  async update(req, res) {
+    const id = req.middleware.id;
+    var role = req.middleware.role;
+    const reqBody = req.body;
+    const acceptedFeilds = [
+      "event_name",
+      "name",
+      "email",
+      "phone",
+      "description",
+      "date",
+      "location",
+    ];
+    if (!requestParameter(acceptedFeilds, reqBody)) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "unwanted feilds" }, 400));
+    }
+    const requiredFeilds = ["event_name"];
+    if (!requestValidation(requiredFeilds, reqBody)) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
+    }
+    try {
+      var EventId;
+      if (role == "root") {
+        var response = await Event.findOne({
+          where: { name: reqBody.event_name, root_id: id },
+          attributes: ["id"],
+        });
+        if (!response) {
+          return res
+            .status(400)
+            .json(createApiResponse({ response: "event not found" }, 400));
+        }
+        EventId = response.id;
+      } else {
+        var response = await Event.findOne({
+          where: { name: reqBody.event_name },
+          attributes: ["id"],
+        });
+        if (!response) {
+          return res
+            .status(400)
+            .json(createApiResponse({ response: "event not found" }, 400));
+        }
+        EventId = response.id;
+        response = await Role.findAll({
+          where: { user_id: id, event_id: EventId },
+          attributes: [[sequelize.col("role_list.name"), "role"]],
+          include: [{ model: Role_list, as: "role_list", attributes: [] }],
+        });
+        if (!response) {
+          return res
+            .status(400)
+            .json(createApiResponse({ response: "event not found" }, 400));
+        }
+        const adminRole = response.find((data) => {
+          const jsonData = data.toJSON();
+          return jsonData.role === "admin";
+        });
+
+        if (adminRole) {
+          role = "admin";
+        }
+      }
+      const acceptedRole = ["root", "admin"];
+      if (!acceptedRole.includes(role)) {
+        return res
+          .status(403)
+          .json(createApiResponse({ response: "restricted content" }, 403));
+      }
+      var data = reqBody;
+      delete data.event_name;
+      if (data["name"]) {
+        await Event.update({ name: data.name }, { where: { id: EventId } });
+        delete data.name;
+      }
+      if (data) {
+        await Event_detail.update(data, { where: { event_id: EventId } });
+      }
+      return res
+        .status(200)
+        .json(createApiResponse({ response: "update successfull" }, 200));
+    } catch (error) {
+      if (error.name == "SequelizeDatabaseError") {
+        return res
+          .status(400)
+          .json(
+            createApiResponse({ response: "input not in proper format" }, 400)
+          );
+      }
+      return res
+        .status(500)
+        .json(createApiResponse({ response: "internal server" }, 500));
+    }
+  }
   async delete(req, res) {
     const id = req.middleware.id;
     const role = req.middleware.role;

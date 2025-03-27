@@ -4,7 +4,10 @@ import {
   requestValidation,
   requestParameter,
 } from "../utility/requestValidation.js";
+
 import "../models/User/UserAssociation.js";
+import "../models/Role/RoleAssociation.js";
+
 import User from "../models/User/User.js";
 import User_credential from "../models/User/User_credential.js";
 import { createJWT } from "../utility/createJWT.js";
@@ -94,8 +97,10 @@ export default class UserController {
     const token = req.middleware.token;
 
     const reqBody = req.body;
-    const requiredFeild = ["name", "phone", "email"];
+    console.log(reqBody);
+    const requiredFeild = ["name", "phone", "email", "password"];
     const validation = requestParameter(requiredFeild, reqBody);
+    console.log(validation);
     if (!validation) {
       return res
         .status(400)
@@ -103,13 +108,21 @@ export default class UserController {
     }
 
     try {
-      await User.update(reqBody, { where: { id: id } });
-      if (token) {
-        return res.status(201).json(createApiResponse({ token: token }, 201));
+      if (reqBody["password"]) {
+        const password = await bcrypt.hash(req.body.password, 10);
+        await User_credential.update({ password }, { where: { user_id: id } });
+        return res
+          .status(201)
+          .json(createApiResponse({ response: "password updated" }, 201));
+      } else {
+        await User.update(reqBody, { where: { id: id } });
+        if (token) {
+          return res.status(201).json(createApiResponse({ token: token }, 201));
+        }
+        return res
+          .status(201)
+          .json(createApiResponse({ response: "update successfull" }, 201));
       }
-      return res
-        .status(201)
-        .json(createApiResponse({ response: "update successfull" }, 201));
     } catch (error) {
       console.log("user.js error3: ", error);
       if (error.name === "SequelizeUniqueConstraintError") {

@@ -22,14 +22,21 @@ async function publishMessage(queue, data) {
 
 async function voice_text(survey_id, file) {
   const audioFilePath = path.join("uploads", file);
+  const fileExtension = path.extname(file).toLowerCase();
 
   try {
     const audioData = fs.readFileSync(audioFilePath);
     const encodedAudio = audioData.toString("base64");
-    const audioMessage = { id: survey_id, audio_data: encodedAudio };
+    const audioMessage = {
+      id: survey_id,
+      audio_data: encodedAudio,
+      file_format: fileExtension.replace(".", ""), // Remove the dot from the extension
+    };
     await publishMessage("voice-text", audioMessage);
+
     fs.unlinkSync(audioFilePath);
   } catch (error) {
+    console.error("Error in voice_text:", error);
     return error;
   }
 }

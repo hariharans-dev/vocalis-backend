@@ -10,10 +10,14 @@ audienceRouter.post(
   authMiddleware,
   audiencecontroller.registerEndpoint
 );
-audienceRouter.get("/endpoint", authMiddleware, audiencecontroller.getEndpoint);
+audienceRouter.post(
+  "/endpoint/get",
+  authMiddleware,
+  audiencecontroller.getEndpoint
+);
 audienceRouter.post("/data", audiencecontroller.registerData);
-audienceRouter.get("/data", authMiddleware, audiencecontroller.getData);
+audienceRouter.post("/data/get", authMiddleware, audiencecontroller.getData);
 audienceRouter.post("/report", authMiddleware, audiencecontroller.createReport);
-audienceRouter.get("/report", authMiddleware, audiencecontroller.getReport);
+audienceRouter.post("/report/get", authMiddleware, audiencecontroller.getReport);
 
 export default audienceRouter;

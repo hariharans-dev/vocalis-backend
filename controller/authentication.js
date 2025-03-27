@@ -68,6 +68,7 @@ export default class AuthenticationController {
   }
   async userlogin(req, res) {
     const reqBody = req.body;
+    console.log(reqBody);
     const requiredFeilds = ["email", "password"];
     const validation = requestValidation(requiredFeilds, reqBody);
     if (!validation) {
@@ -193,8 +194,11 @@ export default class AuthenticationController {
       .json(createApiResponse({ response: "logout successful" }, 201));
   }
   async session(req, res) {
+    const role = req.middleware.role;
     return res
       .status(201)
-      .json(createApiResponse({ response: "session is active" }, 201));
+      .json(
+        createApiResponse({ role: role, response: "session is active" }, 201)
+      );
   }
 }
