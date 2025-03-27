@@ -8,8 +8,7 @@ const rolecontroller = new RoleController();
 
 roleRouter.post("/get", authMiddleware, rolecontroller.get);
 roleRouter.post("/", authMiddleware, rolecontroller.register);
-// roleRouter.delete("/", rolecontroller.delete);
-
+roleRouter.delete("/", authMiddleware, rolecontroller.delete);
 roleRouter.post("/list", authMiddleware, rolecontroller.getUserRole);
 roleRouter.post("/event/list", authMiddleware, rolecontroller.getEventRole);
 

@@ -38,9 +38,7 @@ export default class RootController {
       data = data.toJSON();
       resBody = { ...resBody, ...data };
 
-      return res
-        .status(201)
-        .json(createApiResponse({ root_data: resBody }, 201));
+      return res.status(201).json(createApiResponse(resBody, 201));
     } catch (error) {
       console.log("root.js error1: ", error);
       return res
@@ -106,7 +104,7 @@ export default class RootController {
     const token = req.middleware.token;
 
     const reqBody = req.body;
-    const requiredFeild = ["name", "phone", "email"];
+    const requiredFeild = ["name", "phone", "email", "password"];
     const validation = requestParameter(requiredFeild, reqBody);
     if (!validation) {
       return res
@@ -115,17 +113,26 @@ export default class RootController {
     }
 
     try {
-      await Root.update(reqBody, { where: { id: id } });
-      if (token) {
+      if (reqBody["password"]) {
+        const password = await bcrypt.hash(req.body.password, 10);
+        await Root_credential.update({ password }, { where: { root_id: id } });
         return res
           .status(201)
-          .json(
-            createApiResponse(
-              { token: token, response: "update successful" },
-              201
-            )
-          );
+          .json(createApiResponse({ response: "password updated" }, 201));
+      } else {
+        await Root.update(reqBody, { where: { id: id } });
+        if (token) {
+          return res
+            .status(201)
+            .json(
+              createApiResponse(
+                { token: token, response: "update successful" },
+                201
+              )
+            );
+        }
       }
+
       return res
         .status(201)
         .json(createApiResponse({ response: "update successfull" }, 201));
