@@ -23,6 +23,13 @@ sudo docker pull redis
 # pull docker insights image
 sudo docker pull hariharansdeveloper/vocalis-insight-broker:latest
 
+# create docker network
+docker network create vocalisNetwork
+
+# run docker containers in the network
+docker run --rm -d --name redis-server --network=vocalisNetwork redis
+docker run --rm -d --name vocalis-backend --network=vocalisNetwork hariharansdeveloper/vocalis-backend:latest
+
 
 
 
