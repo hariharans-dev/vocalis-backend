@@ -1,24 +1,7 @@
 import redis from "redis";
 import fs from "fs";
 import path from "path";
-
-async function publishMessage(queue, data) {
-  const client = redis.createClient({
-    socket: {
-      host: "0.0.0.0",
-      port: 6379,
-    },
-  });
-
-  client.on("error", (err) => console.log("Redis Client Error", err));
-
-  await client.connect();
-
-  await client.rPush(queue, JSON.stringify(data));
-  console.log(`Published message`);
-
-  await client.quit();
-}
+import { publishMessage } from "../db/redis_connection.js";
 
 async function voice_text(survey_id, file) {
   const audioFilePath = path.join("uploads", file);

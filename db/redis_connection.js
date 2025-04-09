@@ -13,6 +13,12 @@ client.on("error", (error) => {
 
 (async () => {
   await client.connect();
+  console.log(
+    "redis active on ",
+    process.env.REDIS_HOST,
+    " ",
+    process.env.REDIS_PORT
+  );
 })();
 
 async function setKey(key, value, expiration) {
@@ -26,4 +32,12 @@ async function getKey(key) {
 async function deleteKey(key) {
   return client.del(key);
 }
-export { setKey, getKey, deleteKey, client };
+
+async function publishMessage(queue, data) {
+  await client.rPush(queue, JSON.stringify(data));
+  console.log(`Published message`);
+
+  await client.quit();
+}
+
+export { setKey, getKey, deleteKey, client, publishMessage };
