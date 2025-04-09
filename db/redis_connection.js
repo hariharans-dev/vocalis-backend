@@ -36,8 +36,6 @@ async function deleteKey(key) {
 async function publishMessage(queue, data) {
   await client.rPush(queue, JSON.stringify(data));
   console.log(`Published message`);
-
-  await client.quit();
 }
 
 export { setKey, getKey, deleteKey, client, publishMessage };
