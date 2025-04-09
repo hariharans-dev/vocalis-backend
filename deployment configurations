@@ -30,6 +30,7 @@ docker network create vocalisNetwork
 docker run --rm -d --name redis-server --network=vocalisNetwork redis
 docker run --rm -d --name vocalis-backend --network=vocalisNetwork hariharansdeveloper/vocalis-backend:latest
 
+docker run --rm -d -p 4000:4000 --name vocalis-backend --network=vocalisNetwork hariharansdeveloper/vocalis-backend:latest
 
 
 
