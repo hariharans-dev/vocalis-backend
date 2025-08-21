@@ -8,8 +8,8 @@ const usercontroller = new UserController();
 
 // rootRouter.use(authMiddleware);
 
-userRouter.post("/", usercontroller.register);
-userRouter.get("/", authMiddleware, usercontroller.get);
+userRouter.post("/register", usercontroller.register);
+userRouter.post("/get", authMiddleware, usercontroller.get);
 userRouter.put("/", authMiddleware, usercontroller.update);
 userRouter.delete("/", onetimeuseMiddleware, usercontroller.delete);
 userRouter.post("/forgetpassword", usercontroller.forgetpassword);
