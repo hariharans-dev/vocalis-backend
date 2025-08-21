@@ -1,10 +1,10 @@
 import { createClient } from "redis";
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".env.development" });
 
 const client = createClient({
-  socket: {
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-  },
+  url: process.env.REDIS_URL,
 });
 
 client.on("error", (error) => {
@@ -13,12 +13,6 @@ client.on("error", (error) => {
 
 (async () => {
   await client.connect();
-  console.log(
-    "redis active on ",
-    process.env.REDIS_HOST,
-    " ",
-    process.env.REDIS_PORT
-  );
 })();
 
 async function setKey(key, value, expiration) {

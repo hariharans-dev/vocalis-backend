@@ -11,13 +11,14 @@
     "start": "node app.js",
     "build": "terser app.js -o dist/app.min.js",
     "prod": "node dist/app.min.js",
-    "prebuild": "mkdir -p dist"
+    "prebuild": "mkdir -p dist",
+    "test": "node test.js"
   },
   "dependencies": {
     "-": "^0.0.1",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "g": "^2.0.1",
     "jsonwebtoken": "^9.0.2",
