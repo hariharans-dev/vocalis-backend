@@ -13,6 +13,6 @@ authRouter.post("/user", authcontroller.userlogin);
 authRouter.post("/root/google", authcontroller.rootgooglelogin);
 authRouter.post("/user/google", authcontroller.usergooglelogin);
 authRouter.delete("/", onetimeuseMiddleware, authcontroller.logout);
-authRouter.get("/", authMiddleware, authcontroller.session);
+authRouter.post("/get", authMiddleware, authcontroller.session);
 
 export default authRouter;
