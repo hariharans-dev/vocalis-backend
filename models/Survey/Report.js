@@ -27,9 +27,25 @@ Report.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    general_opinion: { type: DataTypes.JSON },
-    summary: { type: DataTypes.JSON },
-    overall_summary: { type: DataTypes.JSON },
+    general_opinion: { type: DataTypes.STRING, allowNull: true },
+    total_feedbacks: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: true,
+    },
+    positive_feedbacks: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: true,
+    },
+    negative_feedbacks: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: true,
+    },
+    positive_summary: { type: DataTypes.STRING, allowNull: true },
+    negative_summary: { type: DataTypes.STRING, allowNull: true },
+    overall_summary: { type: DataTypes.STRING, allowNull: true },
   },
   {
     sequelize,

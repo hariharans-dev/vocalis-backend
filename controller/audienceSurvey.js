@@ -372,7 +372,7 @@ export default class AudienceController {
     const reqBody = req.body;
     var event_id;
 
-    const requestParameterFeilds = ["event_name", "duration", "view"];
+    const requestParameterFeilds = ["event_name", "duration"];
     if (!requestParameter(requestParameterFeilds, reqBody)) {
       if (!requestParameter(requestParameterFeilds, reqBody)) {
         return res
@@ -484,11 +484,6 @@ export default class AudienceController {
       });
       response = response.toJSON();
       data["id"] = response.id;
-      if (reqBody["view"]) {
-        data["view"] = reqBody["view"];
-      } else {
-        data["view"] = "overall";
-      }
 
       text_insight(data);
 
@@ -510,7 +505,7 @@ export default class AudienceController {
     const reqBody = req.body;
     var event_id;
 
-    const requestParameterFeilds = ["event_name", "limit", "view"];
+    const requestParameterFeilds = ["event_name", "limit"];
     if (!requestParameter(requestParameterFeilds, reqBody)) {
       if (!requestParameter(requestParameterFeilds, reqBody)) {
         return res
@@ -584,18 +579,20 @@ export default class AudienceController {
         .json(createApiResponse({ response: "restricted content" }, 403));
     }
     var response;
-    const view = reqBody["view"];
     try {
       var options = {
         where: { event_id, report_type: "audience" },
-        attributes: ["general_opinion", "overall_summary"],
+        attributes: [
+          "general_opinion",
+          "total_feedbacks",
+          "positive_feedbacks",
+          "negative_feedbacks",
+          "positive_summary",
+          "negative_summary",
+          "overall_summary",
+        ],
         order: [["createdAt", "DESC"]],
       };
-      if (view == "quick") {
-        options["where"]["summary"] = null;
-      } else {
-        options["attributes"].push("summary");
-      }
       if (reqBody["limit"] !== undefined && reqBody["limit"] !== null) {
         options["limit"] = parseInt(reqBody["limit"], 10);
       }
@@ -605,6 +602,7 @@ export default class AudienceController {
       if (response) {
         response = response.map((res) => res.toJSON());
       }
+      console.log(response);
       if (!response[0]) {
         return res
           .status(200)

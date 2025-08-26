@@ -38,7 +38,6 @@ async function deleteKey(key) {
 async function publishMessage(channel, data) {
   const redis = await connectRedis();
   await redis.publish(channel, JSON.stringify(data));
-  console.log(`📤 Published message to channel: ${channel}`);
 }
 
 async function subscribeToChannel(channel, handler) {
@@ -47,7 +46,6 @@ async function subscribeToChannel(channel, handler) {
 
   sub.subscribe(channel, (message) => {
     const data = JSON.parse(message);
-    console.log("📥 Received:", data);
     handler(data);
   });
 }
