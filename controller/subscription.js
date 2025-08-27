@@ -28,7 +28,7 @@ export default class SubscriptionController {
       var plan = await Subscription_plan.findOne({
         where: { name: reqBody.subscription_plan_name },
         attributes: {
-          exclude: ["name", "request", "description", "createdAt", "updatedAt"],
+          exclude: ["name", "description", "createdAt", "updatedAt"],
         },
       });
 
@@ -42,10 +42,12 @@ export default class SubscriptionController {
       }
 
       plan = plan.toJSON();
+      console.log(plan);
       const planId = plan.id;
       await Subscription.create({
         root_id: id,
         subscription_plan_id: planId,
+        remaining_request: plan.request,
       });
       resBody = { ...resBody, response: "subscription created" };
       return res.status(200).json(createApiResponse(resBody, 200));
