@@ -105,14 +105,10 @@ export default class SubscriptionController {
         attributes: { exclude: ["id", "createdAt", "updatedAt"] },
       });
       if (!response) {
-        return res
-          .status(201)
-          .json(createApiResponse({ subscription_plan: {} }, 201));
+        return res.status(201).json(createApiResponse({}, 201));
       }
       response = response.map((plan) => plan.toJSON());
-      return res
-        .status(201)
-        .json(createApiResponse({ subscription_plan: response }, 201));
+      return res.status(201).json(createApiResponse({ response }, 201));
     } catch (error) {
       console.log(error);
       return res
