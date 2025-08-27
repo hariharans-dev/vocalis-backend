@@ -122,7 +122,7 @@ export default class SubscriptionController {
   }
   async createPlan(req, res) {
     const reqBody = req.body;
-    const requiredFeild = ["name", "request", "description"];
+    const requiredFeild = ["name", "request", "description", "price"];
     const validation = requestValidation(requiredFeild, reqBody);
     if (!validation) {
       return res
@@ -132,9 +132,10 @@ export default class SubscriptionController {
     const name = reqBody.name;
     const request = reqBody.request;
     const description = reqBody.description;
+    const price = reqBody.price;
 
     try {
-      await Subscription_plan.create({ name, request, description });
+      await Subscription_plan.create({ name, request, description, price });
       return res
         .status(200)
         .json(
