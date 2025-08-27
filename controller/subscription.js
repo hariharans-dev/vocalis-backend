@@ -108,7 +108,7 @@ export default class SubscriptionController {
         return res.status(201).json(createApiResponse({}, 201));
       }
       response = response.map((plan) => plan.toJSON());
-      return res.status(201).json(createApiResponse({ response }, 201));
+      return res.status(201).json(createApiResponse(response, 201));
     } catch (error) {
       console.log(error);
       return res
