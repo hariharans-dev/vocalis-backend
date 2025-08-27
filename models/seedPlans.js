@@ -12,6 +12,7 @@ export default async function seedPlans() {
         id: uuidv4(),
         name: "free-tier",
         request: 20,
+        price: 0,
         description: "Basic plan with limited access.",
       },
     ]);
