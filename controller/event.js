@@ -140,15 +140,8 @@ export default class EventController {
     try {
       if (role == "root") {
         response = await Event.findOne({
-          where: { name: reqBody.event_name, root_id: id },
+          where: { root_id: id, name: reqBody.event_name },
           attributes: ["name", "endpoint"],
-          include: [
-            {
-              model: Event_detail,
-              as: "event_detail",
-              attributes: ["location", "phone", "email", "description", "date"],
-            },
-          ],
         });
       } else {
         response = await Event.findOne({
@@ -164,7 +157,7 @@ export default class EventController {
           ],
         });
       }
-      if (esponse == null) {
+      if (response == null) {
         return res
           .status(404)
           .json(createApiResponse({ response: "no such event or role" }, 404));
