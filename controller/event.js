@@ -67,8 +67,40 @@ export default class EventController {
     }
   }
   async get(req, res) {
+    let reqBody = req.body;
+
+    if (typeof reqBody === "string") {
+      try {
+        reqBody = JSON.parse(reqBody);
+      } catch (e) {
+        reqBody = {};
+      }
+    }
+
+    if (reqBody && "event_endpoint" in reqBody) {
+      var response = await Event.findOne({
+        where: {
+          endpoint: reqBody.event_endpoint,
+        },
+        attributes: ["name"],
+      });
+
+      if (response) {
+        response = response.toJSON();
+        return res
+          .status(403)
+          .json(createApiResponse({ event: response.name }, 200));
+      }
+      return res
+        .status(403)
+        .json(
+          createApiResponse({ response: "no event with that endpoint" }, 400)
+        );
+    }
+
     const id = req.middleware.id;
     var role = req.middleware.role;
+
     if (role == "user") {
       try {
         var roleresponse = await Role.findOne({
@@ -104,7 +136,6 @@ export default class EventController {
         .json(createApiResponse({ response: "restricted content" }, 403));
     }
 
-    const reqBody = req.body;
     var response;
     try {
       if (role == "root") {
@@ -133,7 +164,7 @@ export default class EventController {
           ],
         });
       }
-      if (response == null) {
+      if (esponse == null) {
         return res
           .status(404)
           .json(createApiResponse({ response: "no such event or role" }, 404));
