@@ -11,7 +11,7 @@ Subscription.init(
       defaultValue: uuidv4,
       primaryKey: true,
     },
-    invoked_request: {
+    remaining_request: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
