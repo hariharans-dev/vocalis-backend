@@ -12,7 +12,7 @@ import User from "../models/User/User.js";
 import User_credential from "../models/User/User_credential.js";
 
 export default class AuthenticationController {
-  async adminlogin(req, res) {
+  async appadminlogin(req, res) {
     const reqBody = req.body;
     const requiredFeilds = ["user", "key"];
     const validation = requestValidation(requiredFeilds, reqBody);
@@ -26,14 +26,13 @@ export default class AuthenticationController {
       const user = reqBody.user;
       const key = reqBody.key;
       const adminKey = process.env.ADMIN_SECRET;
-      console.log(user, key, adminKey);
 
-      if (user !== "admin" || key !== adminKey) {
+      if (user !== "appadmin" || key !== adminKey) {
         return res
           .status(401)
           .json(createApiResponse({ response: "admin not found" }, 401));
       }
-      const token = await createJWT(adminKey, "admin");
+      const token = await createJWT(adminKey, "appadmin");
 
       return res.status(201).json(createApiResponse({ token: token }, 200));
     } catch (error) {
