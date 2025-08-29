@@ -45,13 +45,19 @@ export default class SubscriptionController {
       }
       plan = plan.toJSON();
       const planId = plan.id;
+      const price = plan.price;
       var response = await Subscription.create({
         root_id: id,
         subscription_plan_id: planId,
         remaining_request: plan.request,
       });
       response = response.toJSON();
-      resBody = { ...resBody, secret_key: response.unique_code };
+      resBody = {
+        ...resBody,
+        secret_key: response.unique_code,
+        price: price,
+        upi_id: process.env.UPI_ID,
+      };
       return res.status(200).json(createApiResponse(resBody, 200));
     } catch (error) {
       return res
@@ -71,14 +77,14 @@ export default class SubscriptionController {
 
     try {
       var response = await Subscription.findAll({
-        where: { root_id: id, status: true },
+        where: { root_id: id },
         attributes: {
           exclude: [
             "id",
             "root_id",
             "subscription_plan_id",
-            "createdAt",
             "updatedAt",
+            "unique_code",
           ],
         },
         include: {
