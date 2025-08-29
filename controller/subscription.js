@@ -150,7 +150,51 @@ export default class SubscriptionController {
       if (error.name == "SequelizeUniqueConstraintError") {
         return res
           .status(409)
-          .json(createApiResponse({ response: "data duplication" }, 409));
+          .json(
+            createApiResponse(
+              { response: "Subscription Plan already exists" },
+              409
+            )
+          );
+      } else {
+        return res
+          .status(500)
+          .json(createApiResponse({ response: "internal server error" }, 500));
+      }
+    }
+  }
+  async updatePlan(req, res) {}
+
+  async deletePlan(req, res) {
+    const reqBody = req.body;
+    const requiredFeild = ["name"];
+    const validation = requestValidation(requiredFeild, reqBody);
+    if (!validation) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
+    }
+    const name = reqBody.name;
+    try {
+      const response = await Subscription_plan.destroy({ where: { name } });
+      if (response == 0) {
+        throw new Error("No rows deleted");
+      }
+      return res
+        .status(200)
+        .json(
+          createApiResponse({ response: "subscription plan deleted" }, 200)
+        );
+    } catch (error) {
+      if (
+        error.name === "SequelizeEmptyResultError" ||
+        error.message.includes("No rows deleted")
+      ) {
+        return res
+          .status(404)
+          .json(
+            createApiResponse({ response: "Subscription Plan not present" }, 404)
+          );
       } else {
         return res
           .status(500)

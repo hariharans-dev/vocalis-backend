@@ -15,5 +15,15 @@ subscriptionRouter.post(
   authMiddleware,
   subscriptioncontroller.createPlan
 );
+subscriptionRouter.put(
+  "/plan",
+  authMiddleware,
+  subscriptioncontroller.updatePlan
+);
+subscriptionRouter.delete(
+  "/plan",
+  authMiddleware,
+  subscriptioncontroller.deletePlan
+);
 
 export default subscriptionRouter;

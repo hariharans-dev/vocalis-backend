@@ -30,7 +30,7 @@ export default class AuthenticationController {
       if (user !== "appadmin" || password !== adminKey) {
         return res
           .status(401)
-          .json(createApiResponse({ response: "admin not found" }, 401));
+          .json(createApiResponse({ response: "app admin not found" }, 401));
       }
       const token = await createJWT(adminKey, "appadmin");
 
