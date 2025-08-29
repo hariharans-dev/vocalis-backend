@@ -1,8 +1,12 @@
 import createApiResponse from "../utility/httpResponse.js";
-import { requestValidation } from "../utility/requestValidation.js";
+import {
+  requestValidation,
+  requestParameter,
+} from "../utility/requestValidation.js";
 import "../models/Subscription/SubscriptionAssociation.js";
 import Subscription from "../models/Subscription/Subscription.js";
 import Subscription_plan from "../models/Subscription/Subscription_plan.js";
+import { where } from "sequelize";
 
 export default class SubscriptionController {
   async register(req, res) {
@@ -163,7 +167,44 @@ export default class SubscriptionController {
       }
     }
   }
-  async updatePlan(req, res) {}
+  async updatePlan(req, res) {
+    const reqBody = req.body;
+    if (reqBody && Object.keys(reqBody).length === 0) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "no feild to update" }, 400));
+    }
+    const requiredFeilds = ["old_name"];
+    if (!requestValidation(requiredFeilds, reqBody)) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
+    }
+    const acceptedFeilds = [
+      "old_name",
+      "name",
+      "request",
+      "price",
+      "description",
+    ];
+    if (!requestParameter(acceptedFeilds, reqBody)) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "unwanted feilds" }, 400));
+    }
+    try {
+      await Subscription_plan.update(reqBody, {
+        where: { name: reqBody.old_name },
+      });
+      return res
+        .status(200)
+        .json(createApiResponse({ response: "Updation successfull" }, 200));
+    } catch (error) {
+      return res
+        .status(500)
+        .json(createApiResponse({ response: "internal server error" }, 500));
+    }
+  }
 
   async deletePlan(req, res) {
     const reqBody = req.body;
@@ -193,7 +234,10 @@ export default class SubscriptionController {
         return res
           .status(404)
           .json(
-            createApiResponse({ response: "Subscription Plan not present" }, 404)
+            createApiResponse(
+              { response: "Subscription Plan not present" },
+              404
+            )
           );
       } else {
         return res
