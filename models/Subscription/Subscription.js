@@ -23,6 +23,11 @@ Subscription.init(
       type: DataTypes.UUID,
       allowNull: false,
     },
+    status: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
   },
   {
     sequelize,

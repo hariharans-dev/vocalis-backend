@@ -79,6 +79,7 @@ export default class RootController {
         root_id: response.id,
         subscription_plan_id: free_tier.id,
         remaining_request: free_tier.request,
+        status: true,
       });
 
       const role = "root";

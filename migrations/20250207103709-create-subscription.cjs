@@ -21,6 +21,11 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
       },
+      status: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

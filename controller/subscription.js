@@ -70,7 +70,7 @@ export default class SubscriptionController {
 
     try {
       var response = await Subscription.findAll({
-        where: { root_id: id },
+        where: { root_id: id, status: true },
         attributes: {
           exclude: [
             "id",

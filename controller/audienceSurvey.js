@@ -438,7 +438,9 @@ export default class AudienceController {
         .json(createApiResponse({ response: "restricted content" }, 403));
     }
 
-    var subscriptionResult = await Subscription.findAll({ where: { root_id } });
+    var subscriptionResult = await Subscription.findAll({
+      where: { root_id, status: true },
+    });
     if (subscriptionResult.length == 0) {
       return res
         .status(403)
