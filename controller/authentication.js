@@ -14,7 +14,7 @@ import User_credential from "../models/User/User_credential.js";
 export default class AuthenticationController {
   async appadminlogin(req, res) {
     const reqBody = req.body;
-    const requiredFeilds = ["user", "key"];
+    const requiredFeilds = ["user", "password"];
     const validation = requestValidation(requiredFeilds, reqBody);
     if (!validation) {
       return res
@@ -24,10 +24,10 @@ export default class AuthenticationController {
 
     try {
       const user = reqBody.user;
-      const key = reqBody.key;
+      const password = reqBody.password;
       const adminKey = process.env.ADMIN_SECRET;
 
-      if (user !== "appadmin" || key !== adminKey) {
+      if (user !== "appadmin" || password !== adminKey) {
         return res
           .status(401)
           .json(createApiResponse({ response: "admin not found" }, 401));
