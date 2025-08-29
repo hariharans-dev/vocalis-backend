@@ -10,6 +10,7 @@ const authcontroller = new AuthenticationController();
 
 authRouter.post("/root", authcontroller.rootlogin);
 authRouter.post("/user", authcontroller.userlogin);
+authRouter.post("/admin", authcontroller.adminlogin);
 authRouter.post("/root/google", authcontroller.rootgooglelogin);
 authRouter.post("/user/google", authcontroller.usergooglelogin);
 authRouter.delete("/", onetimeuseMiddleware, authcontroller.logout);

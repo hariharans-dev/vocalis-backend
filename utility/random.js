@@ -18,3 +18,7 @@ function randomWord(length = 4) {
 export default function randomThreeWords() {
   return [randomWord(), randomWord(), randomWord()].join("-");
 }
+
+export function randomKey(length = 32, encoding = "hex") {
+  return crypto.randomBytes(length).toString(encoding);
+}

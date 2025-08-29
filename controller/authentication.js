@@ -12,6 +12,37 @@ import User from "../models/User/User.js";
 import User_credential from "../models/User/User_credential.js";
 
 export default class AuthenticationController {
+  async adminlogin(req, res) {
+    const reqBody = req.body;
+    const requiredFeilds = ["user", "key"];
+    const validation = requestValidation(requiredFeilds, reqBody);
+    if (!validation) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
+    }
+
+    try {
+      const user = reqBody.user;
+      const key = reqBody.key;
+      const adminKey = process.env.ADMIN_SECRET;
+      console.log(user, key, adminKey);
+
+      if (user !== "admin" || key !== adminKey) {
+        return res
+          .status(401)
+          .json(createApiResponse({ response: "admin not found" }, 401));
+      }
+      const token = await createJWT(adminKey, "admin");
+
+      return res.status(201).json(createApiResponse({ token: token }, 200));
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json(createApiResponse({ response: "internal server error" }, 500));
+    }
+  }
   async rootlogin(req, res) {
     const reqBody = req.body;
     const requiredFeilds = ["email", "password"];
