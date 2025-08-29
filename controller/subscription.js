@@ -39,20 +39,21 @@ export default class SubscriptionController {
       if (!plan) {
         resBody = { ...resBody, response: "no plan found" };
         return res.status(400).json(createApiResponse(resBody, 400));
+      } else if (reqBody.subscription_plan_name == "free-tier") {
+        resBody = { ...resBody, response: "plan already activated" };
+        return res.status(400).json(createApiResponse(resBody, 400));
       }
-
       plan = plan.toJSON();
-      console.log(plan);
       const planId = plan.id;
-      await Subscription.create({
+      var response = await Subscription.create({
         root_id: id,
         subscription_plan_id: planId,
         remaining_request: plan.request,
       });
-      resBody = { ...resBody, response: "subscription created" };
+      response = response.toJSON();
+      resBody = { ...resBody, secret_key: response.unique_code };
       return res.status(200).json(createApiResponse(resBody, 200));
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));

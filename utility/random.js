@@ -15,11 +15,6 @@ function randomWord(length = 4) {
   return word;
 }
 
-function randomThreeWords() {
+export default function randomThreeWords() {
   return [randomWord(), randomWord(), randomWord()].join("-");
 }
-
-// Example usage
-randomThreeWords();
-
-export { randomThreeWords };
