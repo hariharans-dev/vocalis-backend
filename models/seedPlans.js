@@ -11,10 +11,17 @@ export default async function seedPlans() {
     await Subscription_plan.bulkCreate([
       {
         id: uuidv4(),
+        name: "basic",
+        request: 100,
+        price: 30,
+        description: "Basic plan to start running a show.",
+      },
+      {
+        id: uuidv4(),
         name: "free-tier",
         request: 20,
         price: 0,
-        description: "Basic plan with limited access.",
+        description: "Free plan with to get started.",
       },
     ]);
     console.log("✅ Seeded subscription plans");
