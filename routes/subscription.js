@@ -8,6 +8,7 @@ const subscriptioncontroller = new SubscriptionController();
 // rootRouter.use(authMiddleware);
 
 subscriptionRouter.post("/", authMiddleware, subscriptioncontroller.register);
+subscriptionRouter.delete("/", authMiddleware, subscriptioncontroller.delete);
 subscriptionRouter.post("/get", authMiddleware, subscriptioncontroller.get);
 subscriptionRouter.post(
   "/approve",

@@ -70,6 +70,32 @@ export default class SubscriptionController {
         .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
+  async delete(req, res) {
+    try {
+      const body = req.body;
+      const requiredFeilds = ["unique_code"];
+      if (!requestValidation(requiredFeilds, body)) {
+        return res
+          .status(400)
+          .json(
+            createApiResponse({ response: "required feilds missing" }, 400)
+          );
+      }
+      const unique_code = body.unique_code;
+      const response = await Subscription.destroy({ where: { unique_code } });
+      if (response == 0) {
+        throw new Error("No rows deleted");
+      } else {
+        return res
+          .status(200)
+          .json(createApiResponse({ response: "subscription deleted" }, 200));
+      }
+    } catch (error) {
+      return res
+        .status(500)
+        .json(createApiResponse({ response: "internal server error" }, 500));
+    }
+  }
   async get(req, res) {
     const id = req.middleware.id;
     const role = req.middleware.role;
@@ -319,28 +345,9 @@ export default class SubscriptionController {
         var rootid = response.id;
         var rootemail = response.email;
         var query = { root_id: rootid };
-        var attributes = {
-          exclude: [
-            "id",
-            "root_id",
-            "subscription_plan_id",
-            "updatedAt",
-          ],
-        };
 
         if (status === "active") {
           query = { ...query, status: true };
-          attributes = {
-            ...attributes,
-            exclude: [
-              "id",
-              "root_id",
-              "subscription_plan_id",
-              "status",
-              "unique_code",
-              "updatedAt",
-            ],
-          };
         }
 
         response = await Subscription.findAll({
@@ -350,7 +357,9 @@ export default class SubscriptionController {
             as: "subscription_plan",
             attributes: ["name", "description", "request"],
           },
-          attributes: attributes,
+          attributes: {
+            exclude: ["id", "root_id", "subscription_plan_id", "updatedAt"],
+          },
         });
         if (!response) {
           return res
