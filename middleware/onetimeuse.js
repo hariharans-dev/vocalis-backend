@@ -42,7 +42,6 @@ const onetimeuseMiddleware = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.log("middleware onetimeuser.js error1: ", error);
     return res
       .status(403)
       .json(createApiResponse("invalid authentication", 403));

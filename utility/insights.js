@@ -23,7 +23,6 @@ async function voice_text(survey_id, file) {
 }
 
 async function text_insight(data) {
-  console.log(data);
   await publishMessage("text-insight", data);
 }
 

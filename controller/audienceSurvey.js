@@ -523,7 +523,6 @@ export default class AudienceController {
           createApiResponse({ response: "initiated report generation" }, 201)
         );
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));

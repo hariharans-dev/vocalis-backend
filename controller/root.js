@@ -42,7 +42,6 @@ export default class RootController {
 
       return res.status(201).json(createApiResponse(resBody, 201));
     } catch (error) {
-      console.log("root.js error1: ", error);
       return res
         .status(500)
         .json(createApiResponse("internal server error", 500));
@@ -93,7 +92,6 @@ export default class RootController {
           )
         );
     } catch (error) {
-      console.log("root.js error2: ", error);
       if (error.name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
@@ -149,7 +147,6 @@ export default class RootController {
         .status(201)
         .json(createApiResponse({ response: "update successfull" }, 201));
     } catch (error) {
-      console.log("root.js error3: ", error);
       if (error.name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
@@ -180,7 +177,6 @@ export default class RootController {
         .status(201)
         .json(createApiResponse({ response: "root deleted successful" }, 201));
     } catch (error) {
-      console.log("root.js error4: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -226,7 +222,6 @@ export default class RootController {
         createApiResponse({ response: "forgetpassword email sent" }, 201)
       );
     } catch (error) {
-      console.log("root.js error5: ", error);
       return res
         .status(500)
         .json(createApiResponse("internal server error", 500));
@@ -254,7 +249,6 @@ export default class RootController {
         .status(201)
         .json(createApiResponse({ response: "password changed" }, 201));
     } catch (error) {
-      console.log("root.js error6: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));

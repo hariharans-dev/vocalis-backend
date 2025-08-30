@@ -48,7 +48,6 @@ const authMiddleware = async (req, res, next) => {
     req.middleware = reqBody;
     next();
   } catch (error) {
-    console.log("middleware authentication.js error1: ", error);
     return res
       .status(403)
       .json(
