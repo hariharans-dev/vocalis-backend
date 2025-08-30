@@ -1,3 +1,4 @@
+import Root from "../Root/Root.js";
 import Subscription from "./Subscription.js";
 import Subscription_plan from "./Subscription_plan.js";
 
@@ -9,4 +10,9 @@ Subscription_plan.hasOne(Subscription, {
 Subscription.belongsTo(Subscription_plan, {
   foreignKey: "subscription_plan_id",
   as: "subscription_plan",
+});
+
+Subscription.belongsTo(Root, {
+  foreignKey: "root_id",
+  as: "root",
 });

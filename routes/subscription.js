@@ -9,6 +9,17 @@ const subscriptioncontroller = new SubscriptionController();
 
 subscriptionRouter.post("/", authMiddleware, subscriptioncontroller.register);
 subscriptionRouter.post("/get", authMiddleware, subscriptioncontroller.get);
+subscriptionRouter.post(
+  "/approve",
+  authMiddleware,
+  subscriptioncontroller.approve
+);
+subscriptionRouter.post(
+  "/get/all",
+  authMiddleware,
+  subscriptioncontroller.getall
+);
+
 subscriptionRouter.post("/plan/get", subscriptioncontroller.getPlan);
 subscriptionRouter.post(
   "/plan",

@@ -6,7 +6,8 @@ import {
 import "../models/Subscription/SubscriptionAssociation.js";
 import Subscription from "../models/Subscription/Subscription.js";
 import Subscription_plan from "../models/Subscription/Subscription_plan.js";
-import { where } from "sequelize";
+import Root from "../models/Root/Root.js";
+import { Op } from "sequelize";
 
 export default class SubscriptionController {
   async register(req, res) {
@@ -110,6 +111,269 @@ export default class SubscriptionController {
         .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
+  async approve(req, res) {
+    const reqBody = req.body;
+
+    const requiredFeilds = ["unique_code"];
+    if (!requestValidation(requiredFeilds, reqBody)) {
+      return res
+        .status(400)
+        .json(createApiResponse({ response: "required feilds missing" }, 400));
+    }
+
+    try {
+      await Subscription.update(
+        { status: true },
+        {
+          where: { unique_code: reqBody.unique_code },
+        }
+      );
+      return res
+        .status(200)
+        .json(
+          createApiResponse({ response: "Subscription status approved" }, 200)
+        );
+    } catch (error) {
+      return res
+        .status(500)
+        .json(createApiResponse({ response: "internal server error" }, 500));
+    }
+  }
+  async getall(req, res) {
+    try {
+      const body = req.body;
+      const { status } = req.query;
+      if (!status || !["pending", "active", "all", "latest"].includes(status)) {
+        return res
+          .status(400)
+          .json(
+            createApiResponse(
+              { response: "required feilds missing or invalid" },
+              400
+            )
+          );
+      }
+      if (status == "latest") {
+        var response = await Subscription.findAll({
+          where: { status: true },
+          order: [["updatedAt", "DESC"]],
+          include: [
+            {
+              model: Subscription_plan,
+              as: "subscription_plan",
+              attributes: ["name", "description", "request"],
+            },
+            {
+              model: Root,
+              as: "root",
+              attributes: ["email"],
+            },
+          ],
+          attributes: {
+            exclude: ["id", "root_id", "subscription_plan_id", "updatedAt"],
+          },
+        });
+        if (!response) {
+          return res
+            .status(404)
+            .json(
+              createApiResponse({ response: "No subscription found" }, 404)
+            );
+        }
+        response = response.map((plan) => {
+          const planJson = plan.toJSON();
+          const { root, ...rest } = planJson;
+          return {
+            ...rest,
+            root_email: root?.email || null,
+          };
+        });
+        if (!response) {
+          return res
+            .status(404)
+            .json(
+              createApiResponse({ response: "No subscription found" }, 404)
+            );
+        }
+        return res
+          .status(200)
+          .json(createApiResponse({ subscription: response }, 200));
+      } else if (status === "pending") {
+        const acceptedFeilds = ["root_email", "unique_code"];
+        if (
+          !requestParameter(acceptedFeilds, body) ||
+          (body && Object.keys(body).length === 0)
+        ) {
+          return res
+            .status(400)
+            .json(
+              createApiResponse({ response: "unwanted or missing feilds" }, 400)
+            );
+        }
+        if (Object.keys(body).includes("root_email")) {
+          const root_email = body.root_email;
+          var response = await Root.findOne({
+            where: {
+              email: { [Op.like]: `%${root_email}%` },
+            },
+            attributes: ["id", "email"],
+          });
+          if (!response) {
+            return res
+              .status(404)
+              .json(
+                createApiResponse({ response: "No such root user found" }, 404)
+              );
+          }
+          response = response.toJSON();
+          var rootid = response.id;
+          var rootemail = response.email;
+          response = await Subscription.findAll({
+            where: { root_id: rootid, status: false },
+            include: {
+              model: Subscription_plan,
+              as: "subscription_plan",
+              attributes: ["name", "description", "request"],
+            },
+            attributes: {
+              exclude: ["id", "root_id", "subscription_plan_id", "updatedAt"],
+            },
+          });
+          if (!response) {
+            return res
+              .status(404)
+              .json(
+                createApiResponse({ response: "No subscription found" }, 404)
+              );
+          }
+          response = response.map((plan) => {
+            const planObj = plan.toJSON();
+            return { ...planObj, root_email: rootemail };
+          });
+          return res
+            .status(200)
+            .json(createApiResponse({ subscription: response }, 200));
+        } else if (Object.keys(body).includes("unique_code")) {
+          const unique_code = body.unique_code;
+          var response = await Subscription.findAll({
+            where: {
+              unique_code: { [Op.like]: `%${unique_code}%` },
+              status: false,
+            },
+            include: [
+              {
+                model: Subscription_plan,
+                as: "subscription_plan",
+                attributes: ["name", "description", "request"],
+              },
+              { model: Root, as: "root", attributes: ["email"] },
+            ],
+            attributes: {
+              exclude: ["id", "root_id", "subscription_plan_id", "updatedAt"],
+            },
+          });
+          if (!response) {
+            return res
+              .status(404)
+              .json(
+                createApiResponse({ response: "No subscription found" }, 404)
+              );
+          }
+          response = response.map((plan) => {
+            const planObj = plan.toJSON();
+            const { root, ...rest } = planObj;
+            return {
+              ...rest,
+              root_email: root?.email || null,
+            };
+          });
+          return res
+            .status(200)
+            .json(createApiResponse({ subscription: response }, 200));
+        }
+      } else {
+        const requiredFeilds = ["root_email"];
+        if (!requestValidation(requiredFeilds, body)) {
+          return res
+            .status(400)
+            .json(
+              createApiResponse({ response: "required feilds missing" }, 400)
+            );
+        }
+
+        const root_email = body.root_email;
+        var response = await Root.findOne({
+          where: {
+            email: { [Op.like]: `%${root_email}%` },
+          },
+          attributes: ["id", "email"],
+        });
+        if (!response) {
+          return res
+            .status(404)
+            .json(
+              createApiResponse({ response: "No such root user found" }, 404)
+            );
+        }
+        response = response.toJSON();
+        var rootid = response.id;
+        var rootemail = response.email;
+        var query = { root_id: rootid };
+        var attributes = {
+          exclude: [
+            "id",
+            "root_id",
+            "subscription_plan_id",
+            "updatedAt",
+          ],
+        };
+
+        if (status === "active") {
+          query = { ...query, status: true };
+          attributes = {
+            ...attributes,
+            exclude: [
+              "id",
+              "root_id",
+              "subscription_plan_id",
+              "status",
+              "unique_code",
+              "updatedAt",
+            ],
+          };
+        }
+
+        response = await Subscription.findAll({
+          where: query,
+          include: {
+            model: Subscription_plan,
+            as: "subscription_plan",
+            attributes: ["name", "description", "request"],
+          },
+          attributes: attributes,
+        });
+        if (!response) {
+          return res
+            .status(404)
+            .json(
+              createApiResponse({ response: "No subscription found" }, 404)
+            );
+        }
+        response = response.map((plan) => {
+          plan.toJSON();
+          return { ...plan.toJSON(), root_email: rootemail };
+        });
+        return res
+          .status(200)
+          .json(createApiResponse({ subscription: response }, 200));
+      }
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json(createApiResponse({ response: "internal server error" }, 500));
+    }
+  }
   async getPlan(req, res) {
     try {
       var response = await Subscription_plan.findAll({
@@ -205,7 +469,6 @@ export default class SubscriptionController {
         .json(createApiResponse({ response: "internal server error" }, 500));
     }
   }
-
   async deletePlan(req, res) {
     const reqBody = req.body;
     const requiredFeild = ["name"];
