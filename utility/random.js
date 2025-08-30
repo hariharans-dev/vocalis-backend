@@ -15,11 +15,10 @@ function randomWord(length = 4) {
   return word;
 }
 
-function randomThreeWords() {
+export default function randomThreeWords() {
   return [randomWord(), randomWord(), randomWord()].join("-");
 }
 
-// Example usage
-randomThreeWords();
-
-export { randomThreeWords };
+export function randomKey(length = 32, encoding = "hex") {
+  return crypto.randomBytes(length).toString(encoding);
+}

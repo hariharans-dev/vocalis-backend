@@ -8,7 +8,7 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
       },
-      invoked_request: {
+      remaining_request: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
         allowNull: false,
@@ -19,6 +19,16 @@ module.exports = {
       },
       root_id: {
         type: Sequelize.UUID,
+        allowNull: false,
+      },
+      status: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
+      },
+      unique_code: {
+        type: Sequelize.STRING,
+        unique: true,
         allowNull: false,
       },
       createdAt: {

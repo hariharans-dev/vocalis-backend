@@ -19,6 +19,7 @@ import "../models/Survey/SurveyAssociation.js";
 import Audience from "../models/Survey/Audience.js";
 import Audience_survey from "../models/Survey/Audience_survey.js";
 import Report from "../models/Survey/Report.js";
+import Subscription from "../models/Subscription/Subscription.js";
 import { Sequelize } from "sequelize";
 
 export default class AudienceController {
@@ -55,7 +56,6 @@ export default class AudienceController {
           ],
         });
       } catch (error) {
-        console.log("customerSurvey.js error1: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -80,7 +80,6 @@ export default class AudienceController {
             .json(createApiResponse({ response: "event not found" }, 404));
         }
       } catch (error) {
-        console.log("customerSurvey.js error2: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -112,7 +111,6 @@ export default class AudienceController {
         .status(202)
         .json(createApiResponse({ response: "endpoint created" }, 202));
     } catch (error) {
-      console.log("customerSurvey.js error3: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -151,7 +149,6 @@ export default class AudienceController {
           ],
         });
       } catch (error) {
-        console.log("customerSurvey.js error1: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -176,7 +173,6 @@ export default class AudienceController {
             .json(createApiResponse({ response: "event not found" }, 404));
         }
       } catch (error) {
-        console.log("customerSurvey.js error2: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -197,7 +193,6 @@ export default class AudienceController {
   }
   async registerData(req, res) {
     const reqBody = req.body;
-    console.log(reqBody);
     const requestParameterFeilds = [
       "message",
       "event_endpoint",
@@ -251,7 +246,6 @@ export default class AudienceController {
         .status(201)
         .json(createApiResponse({ response: "feedback sent" }, 201));
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -298,7 +292,6 @@ export default class AudienceController {
           ],
         });
       } catch (error) {
-        console.log("customerSurvey.js error1: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -322,7 +315,6 @@ export default class AudienceController {
             .json(createApiResponse({ response: "event not found" }, 404));
         }
       } catch (error) {
-        console.log("customerSurvey.js error2: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -360,7 +352,6 @@ export default class AudienceController {
       }
       return res.status(200).json(createApiResponse(response, 200));
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -371,8 +362,9 @@ export default class AudienceController {
     var role = req.middleware.role;
     const reqBody = req.body;
     var event_id;
+    var root_id;
 
-    const requestParameterFeilds = ["event_name", "duration", "view"];
+    const requestParameterFeilds = ["event_name", "duration"];
     if (!requestParameter(requestParameterFeilds, reqBody)) {
       if (!requestParameter(requestParameterFeilds, reqBody)) {
         return res
@@ -406,7 +398,6 @@ export default class AudienceController {
           ],
         });
       } catch (error) {
-        console.log("customerSurvey.js error1: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -417,12 +408,14 @@ export default class AudienceController {
           .json(createApiResponse({ response: "restricted content" }, 403));
       }
       roleResponse = roleResponse.toJSON();
+      root_id = roleResponse["event"]["root_id"];
       role = roleResponse["role_list"]["name"];
       event_id = roleResponse["event"]["id"];
     } else {
+      root_id = id;
       try {
         var response = await Event.findOne({
-          where: { root_id: id, name: reqBody.event_name },
+          where: { root_id, name: reqBody.event_name },
         });
         if (response == null) {
           return res
@@ -430,7 +423,6 @@ export default class AudienceController {
             .json(createApiResponse({ response: "event not found" }, 404));
         }
       } catch (error) {
-        console.log("customerSurvey.js error2: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -445,6 +437,39 @@ export default class AudienceController {
         .status(403)
         .json(createApiResponse({ response: "restricted content" }, 403));
     }
+
+    var subscriptionResult = await Subscription.findAll({
+      where: { root_id, status: true },
+    });
+    if (subscriptionResult.length == 0) {
+      return res
+        .status(403)
+        .json(
+          createApiResponse(
+            { response: "no subscription plan, please subscribe" },
+            403
+          )
+        );
+    }
+    subscriptionResult = subscriptionResult.map((res) => res.toJSON());
+    let validSubscriptions = subscriptionResult.filter(
+      (sub) => sub.remaining_request > 0
+    );
+    if (validSubscriptions.length === 0) {
+      return res
+        .status(403)
+        .json(
+          createApiResponse(
+            { response: "no valid subscription with remaining requests" },
+            403
+          )
+        );
+    }
+    // Get the one with least remaining_request
+    let leastSubscription = validSubscriptions.reduce((min, sub) =>
+      sub.remaining_request < min.remaining_request ? sub : min
+    );
+
     var response;
     const duration = reqBody.duration;
     try {
@@ -484,11 +509,11 @@ export default class AudienceController {
       });
       response = response.toJSON();
       data["id"] = response.id;
-      if (reqBody["view"]) {
-        data["view"] = reqBody["view"];
-      } else {
-        data["view"] = "overall";
-      }
+
+      await Subscription.update(
+        { remaining_request: leastSubscription.remaining_request - 1 },
+        { where: { id: leastSubscription.id } }
+      );
 
       text_insight(data);
 
@@ -510,7 +535,7 @@ export default class AudienceController {
     const reqBody = req.body;
     var event_id;
 
-    const requestParameterFeilds = ["event_name", "limit", "view"];
+    const requestParameterFeilds = ["event_name", "limit"];
     if (!requestParameter(requestParameterFeilds, reqBody)) {
       if (!requestParameter(requestParameterFeilds, reqBody)) {
         return res
@@ -544,7 +569,6 @@ export default class AudienceController {
           ],
         });
       } catch (error) {
-        console.log("customerSurvey.js error1: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -568,7 +592,6 @@ export default class AudienceController {
             .json(createApiResponse({ response: "event not found" }, 404));
         }
       } catch (error) {
-        console.log("customerSurvey.js error2: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -584,22 +607,23 @@ export default class AudienceController {
         .json(createApiResponse({ response: "restricted content" }, 403));
     }
     var response;
-    const view = reqBody["view"];
     try {
       var options = {
         where: { event_id, report_type: "audience" },
-        attributes: ["general_opinion", "overall_summary"],
+        attributes: [
+          "general_opinion",
+          "total_feedbacks",
+          "positive_feedbacks",
+          "negative_feedbacks",
+          "positive_summary",
+          "negative_summary",
+          "overall_summary",
+        ],
         order: [["createdAt", "DESC"]],
       };
-      if (view == "quick") {
-        options["where"]["summary"] = null;
-      } else {
-        options["attributes"].push("summary");
-      }
       if (reqBody["limit"] !== undefined && reqBody["limit"] !== null) {
         options["limit"] = parseInt(reqBody["limit"], 10);
       }
-      console.log(options);
 
       response = await Report.findAll(options);
       if (response) {
@@ -613,7 +637,6 @@ export default class AudienceController {
 
       return res.status(201).json(createApiResponse(response, 201));
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));

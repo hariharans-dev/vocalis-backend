@@ -8,28 +8,53 @@ const client = createClient({
 });
 
 client.on("error", (error) => {
-  console.log("redis_connection.js error1: ", error);
+  console.error("❌ Redis connection error:", error);
 });
 
-(async () => {
-  await client.connect();
-})();
+let isConnected = false;
+async function connectRedis() {
+  if (!isConnected) {
+    await client.connect();
+    isConnected = true;
+    console.log("✅ Connected to Redis:");
+  }
+  return client;
+}
 
 async function setKey(key, value, expiration) {
-  return await client.set(key, value, { EX: expiration, NX: true });
+  const redis = await connectRedis();
+  return redis.set(key, value, { EX: expiration, NX: true });
 }
 
 async function getKey(key) {
-  return await client.get(key);
+  const redis = await connectRedis();
+  return redis.get(key);
 }
 
 async function deleteKey(key) {
-  return client.del(key);
+  const redis = await connectRedis();
+  return redis.del(key);
+}
+async function publishMessage(channel, data) {
+  const redis = await connectRedis();
+  await redis.publish(channel, JSON.stringify(data));
 }
 
-async function publishMessage(queue, data) {
-  await client.rPush(queue, JSON.stringify(data));
-  console.log(`Published message`);
+async function subscribeToChannel(channel, handler) {
+  const sub = createClient({ url: process.env.REDIS_URL });
+  await sub.connect();
+
+  sub.subscribe(channel, (message) => {
+    const data = JSON.parse(message);
+    handler(data);
+  });
 }
 
-export { setKey, getKey, deleteKey, client, publishMessage };
+export {
+  connectRedis,
+  setKey,
+  getKey,
+  deleteKey,
+  publishMessage,
+  subscribeToChannel,
+};

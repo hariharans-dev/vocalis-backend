@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 
 import sequelize from "./db/db_connection.js";
+import seedPlans from "./models/seedPlans.js";
 
 import rootRouter from "./routes/root.js";
 import userRouter from "./routes/user.js";
@@ -25,8 +26,19 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
-sequelize.sync();
+// sequelize.sync();
 // sequelize.sync({ force: true });
+
+(async () => {
+  try {
+    await sequelize.sync(); // force: true will drop all tables ⚠️
+    await seedPlans(); // run after sync
+
+    console.log("✅ Database synced and seeded");
+  } catch (error) {
+    console.error("❌ Error syncing database:", error);
+  }
+})();
 
 app.use("/root", rootRouter);
 app.use("/user", userRouter);

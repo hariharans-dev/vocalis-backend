@@ -67,8 +67,40 @@ export default class EventController {
     }
   }
   async get(req, res) {
+    let reqBody = req.body;
+
+    if (typeof reqBody === "string") {
+      try {
+        reqBody = JSON.parse(reqBody);
+      } catch (e) {
+        reqBody = {};
+      }
+    }
+
+    if (reqBody && "event_endpoint" in reqBody) {
+      var response = await Event.findOne({
+        where: {
+          endpoint: reqBody.event_endpoint,
+        },
+        attributes: ["name"],
+      });
+
+      if (response) {
+        response = response.toJSON();
+        return res
+          .status(403)
+          .json(createApiResponse({ event: response.name }, 200));
+      }
+      return res
+        .status(403)
+        .json(
+          createApiResponse({ response: "no event with that endpoint" }, 400)
+        );
+    }
+
     const id = req.middleware.id;
     var role = req.middleware.role;
+
     if (role == "user") {
       try {
         var roleresponse = await Role.findOne({
@@ -104,20 +136,12 @@ export default class EventController {
         .json(createApiResponse({ response: "restricted content" }, 403));
     }
 
-    const reqBody = req.body;
     var response;
     try {
       if (role == "root") {
         response = await Event.findOne({
-          where: { name: reqBody.event_name, root_id: id },
+          where: { root_id: id, name: reqBody.event_name },
           attributes: ["name", "endpoint"],
-          include: [
-            {
-              model: Event_detail,
-              as: "event_detail",
-              attributes: ["location", "phone", "email", "description", "date"],
-            },
-          ],
         });
       } else {
         response = await Event.findOne({

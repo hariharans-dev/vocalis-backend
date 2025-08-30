@@ -1,7 +1,6 @@
 import express from "express";
 import RoleController from "../controller/role.js";
 import authMiddleware from "../middleware/authentication.js";
-import adminMiddleware from "../middleware/admin.js";
 
 const roleRouter = express.Router();
 const rolecontroller = new RoleController();
@@ -13,6 +12,6 @@ roleRouter.post("/list", authMiddleware, rolecontroller.getUserRole);
 roleRouter.post("/event/list", authMiddleware, rolecontroller.getEventRole);
 
 roleRouter.get("/rolelist", rolecontroller.getRole);
-roleRouter.post("/rolelist", adminMiddleware, rolecontroller.createRole);
+roleRouter.post("/rolelist", authMiddleware, rolecontroller.createRole);
 
 export default roleRouter;

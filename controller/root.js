@@ -9,6 +9,8 @@ import { sendEmail } from "../utility/emailsender.js";
 import "../models/Root/RootAssociation.js";
 import Root from "../models/Root/Root.js";
 import Root_credential from "../models/Root/Root_credential.js";
+import Subscription from "../models/Subscription/Subscription.js";
+import Subscription_list from "../models/Subscription/Subscription_plan.js";
 
 export default class RootController {
   async get(req, res) {
@@ -67,11 +69,21 @@ export default class RootController {
         { include: { model: Root_credential, as: "root_credential" } }
       );
       response = response.toJSON();
-      const id = response.id;
+
+      var free_tier = await Subscription_list.findOne({
+        where: { name: "free-tier" },
+      });
+      free_tier = free_tier.toJSON();
+
+      await Subscription.create({
+        root_id: response.id,
+        subscription_plan_id: free_tier.id,
+        remaining_request: free_tier.request,
+        status: true,
+      });
+
       const role = "root";
-
-      const token = await createJWT(id, role);
-
+      const token = await createJWT(response.id, role);
       res
         .status(200)
         .json(

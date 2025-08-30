@@ -1,7 +1,6 @@
 import express from "express";
 import SubscriptionController from "../controller/subscription.js";
 import authMiddleware from "../middleware/authentication.js";
-import adminMiddleware from "../middleware/admin.js";
 
 const subscriptionRouter = express.Router();
 const subscriptioncontroller = new SubscriptionController();
@@ -9,12 +8,34 @@ const subscriptioncontroller = new SubscriptionController();
 // rootRouter.use(authMiddleware);
 
 subscriptionRouter.post("/", authMiddleware, subscriptioncontroller.register);
+subscriptionRouter.delete("/", authMiddleware, subscriptioncontroller.delete);
 subscriptionRouter.post("/get", authMiddleware, subscriptioncontroller.get);
+subscriptionRouter.post(
+  "/approve",
+  authMiddleware,
+  subscriptioncontroller.approve
+);
+subscriptionRouter.post(
+  "/get/all",
+  authMiddleware,
+  subscriptioncontroller.getall
+);
+
 subscriptionRouter.post("/plan/get", subscriptioncontroller.getPlan);
 subscriptionRouter.post(
   "/plan",
-  adminMiddleware,
+  authMiddleware,
   subscriptioncontroller.createPlan
+);
+subscriptionRouter.put(
+  "/plan",
+  authMiddleware,
+  subscriptioncontroller.updatePlan
+);
+subscriptionRouter.delete(
+  "/plan",
+  authMiddleware,
+  subscriptioncontroller.deletePlan
 );
 
 export default subscriptionRouter;
