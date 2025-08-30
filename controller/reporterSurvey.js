@@ -38,8 +38,6 @@ export default class ReporterController {
         .json(createApiResponse({ response: "unwanted request feilds" }, 400));
     }
 
-    console.log(reqBody);
-
     const requiredFeilds = ["event_name", "file"];
     if (!requestValidation(requiredFeilds, reqBody)) {
       return res
@@ -103,7 +101,6 @@ export default class ReporterController {
         .status(201)
         .json(createApiResponse({ response: "voice feedback stored" }, 201));
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -166,7 +163,6 @@ export default class ReporterController {
           ],
         });
       } catch (error) {
-        console.log("customerSurvey.js error1: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -190,7 +186,6 @@ export default class ReporterController {
             .json(createApiResponse({ response: "event not found" }, 404));
         }
       } catch (error) {
-        console.log("customerSurvey.js error2: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -281,7 +276,6 @@ export default class ReporterController {
           ],
         });
       } catch (error) {
-        console.log("customerSurvey.js error1: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -305,7 +299,6 @@ export default class ReporterController {
             .json(createApiResponse({ response: "event not found" }, 404));
         }
       } catch (error) {
-        console.log("customerSurvey.js error2: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -369,7 +362,6 @@ export default class ReporterController {
           createApiResponse({ response: "initiated report generation" }, 201)
         );
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -422,7 +414,6 @@ export default class ReporterController {
           ],
         });
       } catch (error) {
-        console.log("customerSurvey.js error1: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -446,7 +437,6 @@ export default class ReporterController {
             .json(createApiResponse({ response: "event not found" }, 404));
         }
       } catch (error) {
-        console.log("customerSurvey.js error2: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));

@@ -37,7 +37,6 @@ export default class UserController {
       resBody = { ...resBody, ...data };
       return res.status(201).json(createApiResponse(resBody, 201));
     } catch (error) {
-      console.log("user.js error1: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -74,7 +73,6 @@ export default class UserController {
 
       return res.status(200).json(createApiResponse({ token: token }, 200));
     } catch (error) {
-      console.log("user.js error2: ", error);
       if (error.name == "SequelizeUniqueConstraintError") {
         return res
           .status(409)
@@ -97,10 +95,8 @@ export default class UserController {
     const token = req.middleware.token;
 
     const reqBody = req.body;
-    console.log(reqBody);
     const requiredFeild = ["name", "phone", "email", "password"];
     const validation = requestParameter(requiredFeild, reqBody);
-    console.log(validation);
     if (!validation) {
       return res
         .status(400)
@@ -124,7 +120,6 @@ export default class UserController {
           .json(createApiResponse({ response: "update successfull" }, 201));
       }
     } catch (error) {
-      console.log("user.js error3: ", error);
       if (error.name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
@@ -155,7 +150,6 @@ export default class UserController {
         .status(201)
         .json(createApiResponse({ response: "user deleted successful" }, 201));
     } catch (error) {
-      console.log("user.js error4: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -201,7 +195,6 @@ export default class UserController {
         createApiResponse({ response: "forgetpassword email sent" }, 201)
       );
     } catch (error) {
-      console.log("user.js error5: ", error);
       return res
         .status(500)
         .json(createApiResponse("internal server error", 500));
@@ -229,7 +222,6 @@ export default class UserController {
         .status(201)
         .json(createApiResponse({ response: "password changed" }, 201));
     } catch (error) {
-      console.log("user.js error6: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));

@@ -14,6 +14,8 @@ import roleRouter from "./routes/role.js";
 import audienceRouter from "./routes/audienceSurvey.js";
 import reporterRouter from "./routes/reporterSurvey.js";
 
+import "./insights_subscriber.js";
+
 dotenv.config({ path: ".env.development" });
 const app = express();
 

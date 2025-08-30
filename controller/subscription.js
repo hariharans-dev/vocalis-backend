@@ -131,7 +131,6 @@ export default class SubscriptionController {
       }
       return res.status(201).json(createApiResponse(resBody, 200));
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -377,7 +376,6 @@ export default class SubscriptionController {
           .json(createApiResponse({ subscription: response }, 200));
       }
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -396,7 +394,6 @@ export default class SubscriptionController {
         .status(201)
         .json(createApiResponse({ subscription_plan: response }, 201));
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));

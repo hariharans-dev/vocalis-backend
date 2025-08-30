@@ -37,7 +37,6 @@ export default class RoleController {
           ],
         });
       } catch (error) {
-        console.log("role.js error1: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -152,7 +151,6 @@ export default class RoleController {
         .status(201)
         .json(createApiResponse({ response: "role created" }, 201));
     } catch (error) {
-      console.log("role.js error2: ", error);
       if (error.name == "SequelizeUniqueConstraintError") {
         return res
           .status(409)
@@ -201,7 +199,6 @@ export default class RoleController {
           ],
         });
       } catch (error) {
-        console.log("customerSurvey.js error1: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -225,7 +222,6 @@ export default class RoleController {
             .json(createApiResponse({ response: "event not found" }, 404));
         }
       } catch (error) {
-        console.log("customerSurvey.js error2: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -251,7 +247,6 @@ export default class RoleController {
       response.map((event) => {
         data = { ...data, event: event, role_list: { name: "root" } };
       });
-      console.log(response);
     }
 
     const requestParameterFeilds = ["count"];
@@ -358,7 +353,6 @@ export default class RoleController {
       role_response = role_response.map((resposne) => resposne.toJSON());
       return res.status(200).json(createApiResponse(role_response, 200));
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -415,7 +409,6 @@ export default class RoleController {
         .status(200)
         .json(createApiResponse({ response: "role deleted successfull" }, 200));
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -430,7 +423,6 @@ export default class RoleController {
       var resBody = { role_list: response };
       return res.status(200).json(createApiResponse(resBody, 200));
     } catch (error) {
-      console.log("role.js error3: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -452,7 +444,6 @@ export default class RoleController {
         .status(201)
         .json(createApiResponse({ response: "role created" }, 201));
     } catch (error) {
-      console.log("role.js error4: ", error);
       if (error.name == "SequelizeUniqueConstraintError") {
         return res
           .status(409)

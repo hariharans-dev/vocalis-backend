@@ -54,7 +54,6 @@ export default class EventController {
       }
       return res.status(201).json(createApiResponse(resBody, 201));
     } catch (error) {
-      console.log("event.js error1: ", error);
       if (error.name === "SequelizeUniqueConstraintError") {
         return res
           .status(409)
@@ -115,7 +114,6 @@ export default class EventController {
           ],
         });
       } catch (error) {
-        console.log("event.js error2: ", error);
         return res
           .status(500)
           .json(createApiResponse({ response: "internal server error" }, 500));
@@ -165,7 +163,6 @@ export default class EventController {
       response = response.toJSON();
       return res.status(200).json(createApiResponse(response, 200));
     } catch (error) {
-      console.log("event.js error3: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
@@ -305,7 +302,6 @@ export default class EventController {
       }
       return res.status(202).json(createApiResponse(resBody, 202));
     } catch (error) {
-      console.log("event.js error4: ", error);
       return res
         .status(500)
         .json(createApiResponse({ response: "internal server error" }, 500));
