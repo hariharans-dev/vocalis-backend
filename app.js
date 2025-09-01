@@ -15,6 +15,7 @@ import audienceRouter from "./routes/audienceSurvey.js";
 import reporterRouter from "./routes/reporterSurvey.js";
 
 import "./insights_subscriber.js";
+import testRouter from "./routes/test.js";
 
 dotenv.config({ path: ".env.development" });
 const app = express();
@@ -50,15 +51,28 @@ app.use("/event", eventRouter);
 app.use("/role", roleRouter);
 app.use("/audience", audienceRouter);
 app.use("/reporter", reporterRouter);
-app.get("/test", async (req, res) => {
-  const response = {
-    status: 200,
-    data: "api is active",
-  };
-  res.status(200).send(response);
-});
+app.use("/test", testRouter);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
+function requestEndpoint() {
+  fetch("http://localhost:" + port + "/test") 
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok " + response.statusText);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log("📡 Periodic response:", data);
+    })
+    .catch((error) => {
+      console.error("❌ Error fetching data:", error);
+    });
+}
+
+requestEndpoint();
+setInterval(requestEndpoint, 120000);
